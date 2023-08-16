@@ -24,3 +24,43 @@ while(1+y!=1) {
 print(paste("El epsilon es ", y, "y llevó ",x," operaciones" ))
 ```
 
+```{r}
+# EJECICIO DE PRUEBA
+
+# numero de ITERACIONES
+n<-100
+
+# punto de arranco
+x0<- 1/3
+y0<- 1/3
+
+# tiempo de espera
+s <- 0.1
+
+m<-matrix(0,ncol=2,nrow=n+1)
+m[1,] <- c(x0,y0)
+par(las=1)
+plot(0,0, xlim = c(0,1), ylim = c(0,1), axes=FALSE, xlab=expression(x[n]), ylab=expression(y[n]), type='n')
+box()
+axis(1,seq(0,1,0.2))
+axis(2,seq(0,1,0.2))
+abline(h = 0, v = 0)
+
+
+for (i in 1:n){
+	xi <- m[i,1] + m[i,2]
+	xi <- xi - floor(xi)
+
+	yi <- 2*m[i,1] + m[i,2]
+	yi <- yi - floor(yi)
+	
+	m[i+1,]<-c(xi,yi)
+	print(m[i+1])
+	points(m[1:i,1],m[1:i,2], pch=16, col=gray(0.8))
+	points(m[i,1],m[i,2], pch=16, col='red')
+	Sys.sleep(s)
+}
+
+```
+
+
