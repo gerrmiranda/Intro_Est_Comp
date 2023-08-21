@@ -58,6 +58,9 @@ ggplot() + geom_point(aes(x=x_1,y=plot_1))
 ggplot() + geom_point(aes(x=x_1,y=plot_2))
 ggplot() + geom_point(aes(x=x_1,y=plot_3))
 
+ggplot() + geom_point(aes(x=x_1,y=plot_1),color='blue')+ geom_point(aes(x=x_1,y=plot_2),color='red')+ geom_point(aes(x=x_1,y=plot_3),color='green')
+
+
 ```
 ```{r}
 #Ejercicio 2
@@ -70,13 +73,13 @@ cauchy= function (x,y) {
 plot_c=cauchy(x_1,0)
 
 
-ggplot() + geom_point(aes(x=x_1,y=plot_c))
+ggplot() + geom_point(aes(x=x_1,y=plot_c)) + geom_point(aes(x=x_1,y=plot_c))
 
 ```
 
 ```{r}
-#Ejercicio 3
-#
+#Ejercicio 2
+# b
 binormal= function (x,p,n)
 {choose(n,x)*(p^x)*((1-p)^(n-x))
 }
@@ -88,5 +91,23 @@ binormal= function (x,p,n)
 binormal(1,0.2,50)
 
 
+```
+```{r}
+# Ejercicio 3
+# 
+year=seq(1,365,1)
+i=1
+for(i in  1:365) {
+  i=i+i
+}
+
+# Usar esta fórmula (n(n+1))/2
+```
+
+```{r}
+
+A = matrix(c(3,4,0,0,1,6,2,1,5),nrow=3,ncol=3)
+           
+solve(A)           
 ```
 
