@@ -1,86 +1,114 @@
 ---
-title: "Practico_0"
-output: pdf_document
-date: "2023-08-21"
+title: "Práctico 0"
+subtitle: "Intro. Estadística Computacional"
+author: "Germán Miranda"
+output:
+  pdf_document: 
+      latex_engine: xelatex
+      fig_caption: yes
+header-includes:
+   - \renewcommand{\contentsname}{Contenidos}      
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+## Cargo librerías
 
 ```{r}
 library(ggplot2)
 ```
 
+# Ejercicio 1
 
-```{r}
-#Ejercicio 1
-#B
+## Parte B
 
-x=seq(-5,5,0.001)
+```{r, ej1-parteb}
+
+x=seq(-5,5,0.5)
+
+p_norm = function(x) {
+  (1/sqrt(2*pi))*exp((-x^2)/2)
+}
+
+d=p_norm(x)
+
+ggplot() + geom_point(aes(x=x,y=d)) + ggtitle("Gráfico de densidad de la función de distribución normal con distancia 0.5") +
+  xlab("Valores de X") + ylab("Densidad")
+
+```
+
+## Parte C
+
+```{r, ej1-partec}
+
+x=seq(-5,5,0.1)
 
 p_norm = function(x) {
   (1/sqrt(2*pi))*exp((-x^2)/2)
 }
 
 x_1=seq(-5,5,0.01)
-```
-
-
-```{r}
 
 d=p_norm(x)
 
-ggplot() + geom_point(aes(x=x,y=d))
+d_1=p_norm(x_1)
+
+ggplot() + geom_point(aes(x=x,y=d)) + ggtitle("Gráfico de densidad de la función de distribución normal con distancia 0.1") +
+  xlab("Valores de X") + ylab("Densidad")
+
+ggplot() + geom_point(aes(x=x_1,y=d_1)) + ggtitle("Gráfico de densidad de la función de distribución normal con distancia 0.01") +
+  xlab("Valores de X") + ylab("Densidad")
 
 ```
 
+## Parte D
 
 ```{r}
-#Ejercicio 1
-#D
 d_norm_sig = function(x,y,z) {
   (1/(sqrt(2*pi)*z))*exp((-((x-y)/z)^2)/2)
 }
-#f(x; µ, σ)
-#1 - µ = 0 y σ = 1
-#2 - µ = 5 y σ = 1
-#3 - µ = 5 y σ = 4
 
 plot_1=d_norm_sig(x_1,0,1)
 plot_2=d_norm_sig(x_1,5,1)
 plot_3=d_norm_sig(x_1,5,4)
 
-
-ggplot() + geom_point(aes(x=x_1,y=plot_1))
-ggplot() + geom_point(aes(x=x_1,y=plot_2))
-ggplot() + geom_point(aes(x=x_1,y=plot_3))
-
-ggplot() + geom_point(aes(x=x_1,y=plot_1),color='blue')+ geom_point(aes(x=x_1,y=plot_2),color='red')+ geom_point(aes(x=x_1,y=plot_3),color='green')
-
+ggplot() + geom_point(aes(x=x_1,y=plot_1),color='blue')+ geom_point(aes(x=x_1,y=plot_2),color='red')+ geom_point(aes(x=x_1,y=plot_3),color='green') + ggtitle("Gráfico de densidad de la distribución normal con variaciones de sigma y mu") + xlab("Valores de X") + ylab("Densidad")
 
 ```
+
+\newpage
+
+# Ejercicio 2
+
+## Parte A
+
 ```{r}
-#Ejercicio 2
-#
 
 cauchy= function (x,y) {
   (1/pi)*(1/(1+(x-y)^2))
 }
 
-plot_c=cauchy(x_1,0)
+x_1=seq(-5,5,0.5)
+x_2=seq(-5,5,0.1)
+x_3=seq(-5,5,0.01)
+
+d_1=cauchy(x_1,0)
+d_2=cauchy(x_2,0)
+d_3=cauchy(x_3,0)
 
 
-ggplot() + geom_point(aes(x=x_1,y=plot_c)) + geom_point(aes(x=x_1,y=plot_c))
+ggplot() + geom_point(aes(x=x_1,y=d_1)) 
+ggplot() + geom_point(aes(x=x_2,y=d_2))
+ggplot() + geom_point(aes(x=x_3,y=d_3))
 
 ```
 
+## Parte B
+
 ```{r}
-#Ejercicio 2
-# b
-binormal= function (x,p,n)
+binormal= function (x,n,p)
 {choose(n,x)*(p^x)*((1-p)^(n-x))
 }
 
@@ -88,26 +116,122 @@ binormal= function (x,p,n)
 #2 - n = 50 y p = 0,8
 #3 - n = 50 y p = 0,5
 
-binormal(1,0.2,50)
+x=seq(1,50,1)
 
+b_1=binormal(x,50,0.2)
+
+b_2=binormal(x,50,0.8)
+
+b_3=binormal(x,50,0.5)
+
+
+ggplot() + geom_point(aes(x=x,y=b_1),color='blue') + geom_point(aes(x=x,y=b_2),color='red') + geom_point(aes(x=x,y=b_3),color='black' ) + 
+  ggtitle("Gráfico de densidad de la distribución binomial") + xlab("Valores de X") + ylab("Densidad")
 
 ```
-```{r}
+\newpage
+
 # Ejercicio 3
-# 
-year=seq(1,365,1)
-i=1
-for(i in  1:365) {
-  i=i+i
-}
 
-# Usar esta fórmula (n(n+1))/2
+## Parte A
+
+```{r}
+
+# Método 1
+
+year=seq(1,365,1)
+result_1=sum(year)
+
+print(paste("El resultado aplicando la función suma es",result_1))
+
+# Método 2
+
+days=365
+result= (days*(days+1))/2
+print(paste("El resultado aplicando la fórmula manual es",result))
+
+prom_mensual=result/12
+
+print(paste("El promedio mensual es",prom_mensual))
+
 ```
+## Parte B
+
+```{r}
+
+# Método 1
+
+year=seq(1,730,1)
+result_1=sum(year)
+
+print(paste("El resultado aplicando la función suma es",result_1))
+
+# Método 2
+
+days=730
+result= (days*(days+1))/2
+print(paste("El resultado aplicando la fórmula manual es",result))
+
+prom_mensual=result/24
+
+print(paste("El promedio mensual es",prom_mensual))
+
+```
+
+## Parte C
+
+```{r}
+
+year=seq(100,465,1)
+result_1=sum(year)
+
+print(paste("El resultado en un año es ",result_1))
+
+prom_mensual=result_1/12
+
+print(paste("El promedio mensual en un año es",prom_mensual))
+
+
+year_2=seq(100,830,1)
+result_2=sum(year_2)
+
+print(paste("El resultado en dos años es ",result_2))
+
+prom_mensual_2=result_2/24
+
+print(paste("El promedio mensual en dos años es",prom_mensual_2))
+
+```
+\newpage
+
+# Ejercicio 4
 
 ```{r}
 
 A = matrix(c(3,4,0,0,1,6,2,1,5),nrow=3,ncol=3)
+
+A_2 = matrix(c(3,0,2,4,1,1,0,6,5),nrow=3,ncol=3,byrow=TRUE)
+
+X = c('a','b','c')
+R= c(360,480,450)
            
-solve(A)           
+
+## PARA VALIDAR QUE REALMENTE ES LA INVERSA  
+
+#Ainv=solve(A)
+#A%*%Ainv
+
+## Solución
+
+result=solve(A,R)
+
+A=result[1]
+B=result[2]
+C=result[3]
+
+print(paste("El producto A vale",A,", el B vale",B," y el C vale",C))
 ```
+
+
+
 
