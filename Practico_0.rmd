@@ -105,7 +105,9 @@ ggplot() + geom_point(aes(x=x_3,y=d_3))
 
 ```
 
+
 ## Parte B
+
 
 ```{r}
 binormal= function (x,n,p)
