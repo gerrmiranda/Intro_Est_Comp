@@ -1,0 +1,33 @@
+---
+title: "Practico_1"
+author: "Germán Miranda"
+date: "2023-08-30"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+# Ejercicio 3
+
+```{r}
+c=(3/16)
+r=(1/16)
+res=(1/5)
+i=1
+
+sum=function(n) {
+  
+  c*(r^n)
+}
+
+while ()  {
+
+resu=sum(i)
+i=i+1
+  
+}
+
+
+```
+
