@@ -21,13 +21,25 @@ sum=function(n) {
   c*(r^n)
 }
 
-while ()  {
-
-resu=sum(i)
-i=i+1
-  
-}
 
 
 ```
+
+# Ejercicio 4
+
+```{r}
+# Parte A
+x=((1/3)+(1/5))+(1/6)
+
+decimal_to_binary(x)
+
+# Parte B 
+
+y=((3/17)+(1/9))+(1/7)
+
+decimal_to_binary(y)
+
+
+```
+
 

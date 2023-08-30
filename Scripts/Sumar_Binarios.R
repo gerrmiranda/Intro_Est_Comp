@@ -29,6 +29,7 @@ binary_sum <- function(bin1, bin2) {
   return(result)
 }
 
+
 binary_sum("10","1")
 
 # Ahora una función que sume binarios con parte fraccionaria!
