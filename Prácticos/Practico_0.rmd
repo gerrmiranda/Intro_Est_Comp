@@ -14,17 +14,13 @@ header-includes:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Cargo librerías
-
-```{r}
-library(ggplot2)
-```
 
 # Ejercicio 1
 
 ## Parte B
 
 ```{r, ej1-parteb}
+library(ggplot2)
 
 x=seq(-5,5,0.5)
 
@@ -36,8 +32,9 @@ d=p_norm(x)
 
 ggplot() + geom_point(aes(x=x,y=d)) + ggtitle("Gráfico de densidad de la función de distribución normal con distancia 0.5") +
   xlab("Valores de X") + ylab("Densidad")
-
 ```
+
+
 
 ## Parte C
 
@@ -99,9 +96,12 @@ d_2=cauchy(x_2,0)
 d_3=cauchy(x_3,0)
 
 
-ggplot() + geom_point(aes(x=x_1,y=d_1)) 
-ggplot() + geom_point(aes(x=x_2,y=d_2))
-ggplot() + geom_point(aes(x=x_3,y=d_3))
+ggplot() + geom_point(aes(x=x_1,y=d_1)) + ggtitle("Gráfico de densidad de la función de distribución de Cauchy con distancia 0.5") +
+  xlab("Valores de X") + ylab("Densidad")
+ggplot() + geom_point(aes(x=x_2,y=d_2)) + ggtitle("Gráfico de densidad de la función de distribución de Cauchy con distancia 0.1") +
+  xlab("Valores de X") + ylab("Densidad")
+ggplot() + geom_point(aes(x=x_3,y=d_3)) + ggtitle("Gráfico de densidad de la función de distribución de Cauchy con distancia 0.01") +
+  xlab("Valores de X") + ylab("Densidad")
 
 ```
 
