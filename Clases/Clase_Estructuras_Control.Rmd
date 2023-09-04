@@ -67,15 +67,76 @@ func_raices(1,1,1)
 func_raices(1,2,1)
 func_raices(1,2,-1)
 
+```
+```{r}
+
+tasa_imp= function (x) {
+if (x<=5) {
+  imp=0
+}
+if ((5<x) & (x<=10)) {
+  imp=0.1
+}
+if ((10<x) & (x<=20))  {
+  imp=0.15
+}
+if (20<x) {
+  imp=0.25
+}
+return(imp)
+}
+x=2
+tasa_imp(x)
+
+gastos = c(2,5,10,15,20,30,500,4,3)
+
+tasa_imp(gastos[3])
 
 ```
-
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
+```{r}
+
+x=c(5,3,8,6,3,8,9,4)
+suma=0
+n=length(x)
+for (i in 1:n) {
+  suma=suma+x[i]
+  print(suma)
+}
+
+```
+```{r}
+
+x=c(1,4,5,3,5,8,6,1)
+x=c(2,4,5,7,9,23)
+x=c(5,3,8,6,3,8,9,4)
+i=x>4
+x[i]
+
+sum(x[i])
+
+n=length(x)
+suma=0
+for (i in 1:n) {
+  if (x[i]>4) {
+  suma = suma + x[i]
+  }
+}
+print(suma)
+
+
+```
+```{r}
+l=1
+i_0= exp(-l)
+k=10
+
+for (i in 1:k) {
+  suma=(i_0*l/k)
+  suma=suma*l/k
+}
+
+```
+
