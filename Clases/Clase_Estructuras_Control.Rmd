@@ -135,7 +135,7 @@ k=10
 
 for (i in 1:k) {
   suma=(i_0*l/k)
-  suma=suma*l/k
+  sumacms=suma*l/k
 }
 
 ```
