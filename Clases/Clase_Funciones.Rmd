@@ -45,6 +45,7 @@ far_to_kel(100)
 
 ```{r}
 
+r1=raices(1,2,-1)
 
 raices = function(a,b,c) {
 
@@ -64,9 +65,8 @@ eje = function (x1,x2) {
   (x1+x2)/2
 }
 
-r1=raices(1,2,-1)
 
-do.call(eje,args = r1)
+ejes=do.call(eje,args = r1)
 
 
 para= function (x) {
@@ -75,8 +75,33 @@ para= function (x) {
 
 equis=seq(-11,10,0.1)
 
-ggplot()+ geom_line(aes(x=equis,y=para(equis))) 
 
+ggplot()+ geom_line(aes(x=equis,y=para(equis))) + geom_vline(xintercept = ejes)
+
+
+```
+
+```{r}
+
+momento = function (x,r,xc=0) {
+  n=length(x)
+  mom = (1/n)*(sum(x-xc)^r)
+  return(mom)
+}
+
+x <-c(1 ,2 ,3)
+
+momento (x,1,xc=2)
+
+x=seq(1,100,0.1)
+
+momento (x)
+momento (x ,1 )
+all.equal(mean(x),momento (x ,1 ))
+r= 2
+momento (x,r, xc =2)
+xc <-0
+momento (x ,r, xc =2)
 
 ```
 
