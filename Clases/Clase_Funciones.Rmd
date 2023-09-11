@@ -1,0 +1,107 @@
+---
+title: "Clase_Funciones"
+output: pdf_document
+date: "2023-09-11"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+
+mi_funcion = function (x1,x2) {
+  hola="hola"
+  invisible(x1+x2) #PARA NO IMPRIMIR LA SALIDA
+  #x1+x2
+}
+
+mi_funcion(1,2)
+```
+
+
+
+```{r}
+#Grados centígrados = (grados Fahrenheit − 32) × 5/9
+
+## DE CELSIUS A FARENHEI
+cels_to_far = function (gr_c=0) {
+  gr_f = (gr_c * (9/5))+32
+  return (gr_f)   
+}
+cels_to_far()
+
+## DE FARENHEI A KELVIN
+far_to_kel = function (gr_f=0) {
+  gr_k = ((60*gr_f)+459.67)*(5/9)
+    return(gr_k)
+  
+}
+far_to_kel(100)
+
+```
+
+
+```{r}
+
+r1=raices(1,2,-1)
+
+raices = function(a,b,c) {
+
+if (((b^2)-(4*a*c))>0) {
+  x1= (((-b) + sqrt(((b^2)-(4*a*c))))/(2*a))
+  x2= (((-b) - sqrt(((b^2)-(4*a*c))))/(2*a))
+  return(list(x1=x1,x2=x2))
+  
+  }  else { if (((b^2)-(4*a*c))==0) {
+            x1=( (-b)/(2*a))
+         return(x1)
+          } 
+    }
+}
+
+eje = function (x1,x2) {
+  (x1+x2)/2
+}
+
+
+ejes=do.call(eje,args = r1)
+
+
+para= function (x) {
+  x^2+2*x-1
+}
+
+equis=seq(-11,10,0.1)
+
+
+ggplot()+ geom_line(aes(x=equis,y=para(equis))) + geom_vline(xintercept = ejes)
+
+
+```
+
+```{r}
+
+momento = function (x,r,xc=0) {
+  n=length(x)
+  mom = (1/n)*(sum(x-xc)^r)
+  return(mom)
+}
+
+x <-c(1 ,2 ,3)
+
+momento (x,1,xc=2)
+
+x=seq(1,100,0.1)
+
+momento (x)
+momento (x ,1 )
+all.equal(mean(x),momento (x ,1 ))
+r= 2
+momento (x,r, xc =2)
+xc <-0
+momento (x ,r, xc =2)
+
+```
+
