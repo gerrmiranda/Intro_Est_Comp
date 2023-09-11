@@ -8,22 +8,75 @@ date: "2023-09-11"
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+```{r}
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+mi_funcion = function (x1,x2) {
+  hola="hola"
+  invisible(x1+x2) #PARA NO IMPRIMIR LA SALIDA
+  #x1+x2
+}
 
-```{r cars}
-summary(cars)
+mi_funcion(1,2)
 ```
 
-## Including Plots
 
-You can also embed plots, for example:
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r}
+#Grados centígrados = (grados Fahrenheit − 32) × 5/9
+
+## DE CELSIUS A FARENHEI
+cels_to_far = function (gr_c=0) {
+  gr_f = (gr_c * (9/5))+32
+  return (gr_f)   
+}
+cels_to_far()
+
+## DE FARENHEI A KELVIN
+far_to_kel = function (gr_f=0) {
+  gr_k = ((60*gr_f)+459.67)*(5/9)
+    return(gr_k)
+  
+}
+far_to_kel(100)
+
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+```{r}
+
+
+raices = function(a,b,c) {
+
+if (((b^2)-(4*a*c))>0) {
+  x1= (((-b) + sqrt(((b^2)-(4*a*c))))/(2*a))
+  x2= (((-b) - sqrt(((b^2)-(4*a*c))))/(2*a))
+  return(list(x1=x1,x2=x2))
+  
+  }  else { if (((b^2)-(4*a*c))==0) {
+            x1=( (-b)/(2*a))
+         return(x1)
+          } 
+    }
+}
+
+eje = function (x1,x2) {
+  (x1+x2)/2
+}
+
+r1=raices(1,2,-1)
+
+do.call(eje,args = r1)
+
+
+para= function (x) {
+  x^2+2*x-1
+}
+
+equis=seq(-11,10,0.1)
+
+ggplot()+ geom_line(aes(x=equis,y=para(equis))) 
+
+
+```
+
