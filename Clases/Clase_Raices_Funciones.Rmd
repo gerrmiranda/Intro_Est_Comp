@@ -1,5 +1,5 @@
 ---
-title: "Untitled"
+title: "Raíces de Funciones"
 output: html_document
 date: "2023-09-13"
 ---
@@ -8,13 +8,11 @@ date: "2023-09-13"
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+## Raíces de funciones
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+# Método Bisección
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
+```{r}
 
 #FUNCION LOG(X)-e^-x
 
@@ -23,7 +21,7 @@ fun = function (x){
       }
 
 
-biseccion = function (iter,tol,x_sup,x_inf,maxiter,amplitud) {
+biseccion = function (fun,iter,tol,x_sup,x_inf,maxiter,amplitud) {
             fx_sup <- fun(x_sup)
             fx_inf <- fun(x_inf)
               
@@ -40,11 +38,16 @@ biseccion = function (iter,tol,x_sup,x_inf,maxiter,amplitud) {
             amplitud <- x_sup - x_inf
             iter <- iter + 1
             }
-            return (x_med )
+            salida <-list ( raiz =x_med , f_raiz = fx_med , iter = iter )
+             return ( salida )
+            #return (x_med )
             }
   
 tol <- 1e-5; iter <-0; x_inf <-0.1; x_sup <-5; amplitud <-Inf ; maxiter <-1000
 
-biseccion(iter=iter,tol=tol,x_sup=x_sup,x_inf=x_inf,maxiter=maxiter,amplitud=amplitud)
+biseccion(fun=fun,iter=iter,tol=tol,x_sup=x_sup,x_inf=x_inf,maxiter=maxiter,amplitud=amplitud)
+
+
+## PENDIENTE APROXIMAR A PI USANDO FUNCIÓN COSENO
 
 ```
