@@ -1,0 +1,50 @@
+---
+title: "Untitled"
+output: html_document
+date: "2023-09-13"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+
+#FUNCION LOG(X)-e^-x
+
+fun = function (x){
+      log(x)-(exp(-x))
+      }
+
+
+biseccion = function (iter,tol,x_sup,x_inf,maxiter,amplitud) {
+            fx_sup <- fun(x_sup)
+            fx_inf <- fun(x_inf)
+              
+            while ( amplitud > tol & iter < maxiter ){
+                x_med <- ( x_sup + x_inf )/2
+                fx_med <- fun(x_med)
+                  if ( fx_inf *fx_med < 0) {
+                     x_sup <-x_med
+                     fx_sup <-fx_med
+                  } else {
+                x_inf <- x_med
+                fx_inf <- fx_med
+            }
+            amplitud <- x_sup - x_inf
+            iter <- iter + 1
+            }
+            return (x_med )
+            }
+  
+tol <- 1e-5; iter <-0; x_inf <-0.1; x_sup <-5; amplitud <-Inf ; maxiter <-1000
+
+biseccion(iter=iter,tol=tol,x_sup=x_sup,x_inf=x_inf,maxiter=maxiter,amplitud=amplitud)
+
+```
