@@ -44,59 +44,52 @@ primero_mayor_k <- function(k){
 
 #El siguiente procedimiento parecía más lógico para luego graficar.
 #Fórmula de Viéte con k raíces cuadradas pero k tiene que ser igual o mayor que 3
-#
-viete_k <- function(x){
+viete_k <- function(k){
     rai <- sqrt(2)
-    for(i in 3:x){
+    for(i in 3:k){
         rai <- sqrt(2+rai)
-        }
-    res <- ((2^x)*sqrt(2-rai))
-    return(res)
     }
+    res <- ((2^k)*sqrt(2-rai))
+    return(res)
+}
 
+viete_k <- function(k) {
+    rai = sqrt(2)
+    
+    rai = sqrt
+}
 
 #Con la función anterior ahora se calcula cual k es el mínimo necesario para tener una precisión de 5 dígitos decimales
-
 tolerancia <- 1e-5
 precision <- 1
-k <-3
+k <- 3
 
-pres = function (x) {
-    precision <- abs(aproximación-pi)
-    return(precision)
-}
-y=list()
-
-for (i in x) {
-  y[x]=pres(x)
-}
- 
-y 
-
-valores=seq(3,10,1)
-
-viete_k(valores)
-viete_k(5)
-
-plot(x=x,y=pres(x))
-
-
-
-
-
-
-
-
-
-pres = function (x)
-  while(precision > tolerancia){
+while(precision > tolerancia){
     aproximación <- viete_k(k)
     k <- k+1
     precision <- abs(aproximación-pi)
-  }
+}
 resultado=k-1
 resultado
 
-precision
 
+pres = function (x) {
+    aproximación <- viete_k(x)
+    precision <- abs(aproximación-pi)
+    return(precision)
+}
+
+y=list()
+for (i in 3:resultado) {
+    y[i]=pres(i)
+}
+
+
+x=seq(3,9,1)
+
+pres(x)
+
+library(ggplot2)
+
+plot(x=equis,y=y)
 
