@@ -1,7 +1,7 @@
 ---
 title: "Tarea Estructuras de Control - While"
-author: "Grupo M"
-date: "2023-09-11"
+author: "Grupo M - Lucas Bizoso, Germán Miranda, Samuel Porras"
+date: "2023-09-14"
 output: pdf_document
 ---
 
@@ -9,22 +9,54 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+#Ejercicio Fórmula de Viéte
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+Empezamos primero definiendo la función "viete_k" que nos va a devolver según el k que le ingresemos, el valor aproximado de PI.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+```{r def_viete}
+viete_k = function(x){
+  rai=sqrt(2)
+  for (i in 3:x) {
+    rai= sqrt(2+ rai)
+    PI =(2^ i)*sqrt(2-rai)
+    }
+    return(PI)
+}
 ```
 
-## Including Plots
+Ahora definimos una tolerancia de 5 decimales y buscamos en qué "K" la función mantiene esa precisión.
 
-You can also embed plots, for example:
+```{r }
+k=3
+tolerancia = 1e-5
+precision = 1
+while (precision>tolerancia) {
+  precision = abs(viete_k(k)-pi)
+  k=k+1
+}
+## Corrijo la iteración
+k=k-1
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+print(paste("El k mínimo es ",k))
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+Con el k hallado en el paso anterior, calculamos la diferencia entre el valor real de PI y el valor dado por la fórmula.
+
+```{r}
+pres=list()
+for (i in 3:k) {
+  pres[i-2]=abs(viete_k(i)-pi)
+} 
+pres=unlist(pres)
+
+```
+
+Defino el vector "equis" para graficar los valores de k y luego procedemos a graficar la precisión en función del k
+
+```{r ,echo=FALSE}
+library(ggplot2)
+equis=seq(3,k,1)
+ggplot()+geom_point(aes(x=equis,y=pres)) + xlab("Valores K") + ylab("Margen de error")+ ggtitle("Aproximación de Fórmula de Véite al valor PI según K")
+
+```
+
