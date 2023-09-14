@@ -48,8 +48,8 @@ for (i in 3:k) {
   pres[i-2]=abs(viete_k(i)-pi)
 } 
 pres=unlist(pres)
-
 ```
+
 
 Defino el vector "equis" para graficar los valores de k y luego procedemos a graficar la precisión en función del k
 
@@ -60,3 +60,38 @@ ggplot()+geom_point(aes(x=equis,y=pres)) + xlab("Valores K") + ylab("Margen de e
 
 ```
 
+
+# Ejercicio Obtener primer Fibonacci mayor que 100
+
+Para obtener el primer Fibonacci mayor que 100 usaremos la función que definimos en la entrega de "IF FOR". La misma mientras no encuentre el valor mayor que k, volverá a hacer un Fibonacci con un valor más hasta encontrarlo. 
+
+```{r def_fibonacci}
+#Fibonacci
+fibonacci <- function(k){  #Primeros k elementos de la secuencia de Fibonacci
+    cuant <- rep(0,k)
+    for (i in 1:k){
+        if(i==1){
+            cuant[i] <- 0
+        }else if(i==2){
+            cuant[i] <- 1
+        }else{
+            cuant[i] <- cuant[i-1] + cuant[i-2]
+        }
+    }
+    return(cuant)
+}
+
+```
+
+
+```{r}
+inicio=0
+fin=100
+i=3
+
+while (inicio<fin) {
+  inicio=fibonacci(i)[i]
+  i=i+1
+}
+print(paste("El primer Fibonacci mayor a 100 aparece en la iteración ",i-1," y su valor es",fibonacci(i-1)[i-1]))
+```

@@ -45,11 +45,11 @@ impuesto_galletas(gasto)
 ```
 
 
-## Ejercicio Suma de Fibonacci
+## Ejercicio Secuencia de Fibonacci
 
-Definimos primero la función "fibonacci" que define el vector de la sucesión según el k inicial que le pasemos.
+Para obtener poder calcular los primeros K elemetos de la serie, definimos la función "fibonacci" que define el vector según el k inicial que le pasemos.
 
-```{r}
+```{r def_fibonacci}
 #Fibonacci
 fibonacci <- function(k){  #Primeros k elementos de la secuencia de Fibonacci
     cuant <- rep(0,k)
@@ -67,19 +67,18 @@ fibonacci <- function(k){  #Primeros k elementos de la secuencia de Fibonacci
 
 ```
 
-
-Luego para obtener el primer Fibonacci mayor que 100 usaremos esta función que mientras no encuentre el valor mayor que k volverá a hacer un Fibonacci con un valor más hasta encontrarlo. 
+Para corroborar, probamos con algunos valores de K.
 
 ```{r}
-inicio=0
-fin=100
-i=3
+k=5
+fibonacci(k)
 
-while (inicio<fin) {
-  inicio=fibonacci(i)[i]
-  i=i+1
-}
-print(paste("El primer Fibonacci mayor a 100 aparece en la iteración ",i-1," y su valor es",fibonacci(i-1)[i-1]))
+k=10
+fibonacci(k)
+
+k=15
+fibonacci(k)
+
 ```
 
 
