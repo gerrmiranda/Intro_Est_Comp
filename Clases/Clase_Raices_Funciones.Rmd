@@ -51,3 +51,6 @@ biseccion(fun=fun,iter=iter,tol=tol,x_sup=x_sup,x_inf=x_inf,maxiter=maxiter,ampl
 ## PENDIENTE APROXIMAR A PI USANDO FUNCIÓN COSENO
 
 ```
+
+# Método de Punto Fijo
+
