@@ -76,29 +76,37 @@ ipf <- function ( FUN ,x0 , tol =1e-5 , maxiter =1000) {
 
 ipf(FUN = g1,x0=1)
 
-biseccion(fun=g1,tol = 1e-6,iter=0, x_inf =1, x_sup=2)
+#biseccion(fun=g1,tol = 1e-6,iter=0, x_inf =1, x_sup=2)
 
 ```
+
+
+## IPF con el trace
+
 ```{r}
-ipf <- function ( FUN ,x0 , tol =1e-5 , maxiter =1000) {
+
+
+ipf <- function ( FUN ,x0 , tol =1e-5 , maxiter=1000,trace=TRUE) {
                  x_new <- FUN ( x0 )
-                  iter <-1
+                  iter <-0
             while (abs( x_new - x0 ) > tol & iter < maxiter ){
-                    
                   x0 <-x_new
-                  x_new <- FUN ( x0 )
+                  x_new <- FUN (x0)
                  iter <- iter + 1
-                cat ( paste ("x_",iter , sep ="") ,"=",x_new ,"\n")
-                     }
+              if (trace==TRUE) {
+              cat ( paste ("x_",iter , sep ="") ,"=",x_new ,"\n")
+              }
+              }
               if( iter == maxiter ) {
             cat ("No hubo convergencia luego de ",iter ," iteraciones ","\n")
- } else {
- cat ("Si hubo convergencia luego de ",iter ," iteraciones ","\n")
- }
- salida <-list (pf=x_new , iter = iter )
- return ( salida )
+              } else {
+            cat ("Si hubo convergencia luego de ",iter ," iteraciones ","\n")
+          }
+        salida <-list (pf=x_new , iter = iter )
+        return ( salida )
 }
 
+ipf(FUN = g1,x0=1,trace = FALSE)
 #lubridate librería para fechas
 ```
 
@@ -108,6 +116,28 @@ ipf <- function ( FUN ,x0 , tol =1e-5 , maxiter =1000) {
 
 ```{r}
 
+f1= function(x) {log(x)-exp(-x)}
+f2= function(x) {1/x+exp(-x)}
+
+nr <- function ( FUN , dFUN , x0 , tol = 1e-5 , maxiter =1000) {
+          x_new <- x0 - FUN ( x0 )/ dFUN ( x0 )
+          iter <- 0
+      while ( abs (x_new - x0 ) > tol & iter < maxiter ) {
+            x0 <- x_new
+            x_new <- x0 - FUN ( x0 )/ dFUN ( x0 )
+            iter <- iter + 1
+      cat ( paste ("x_",iter , sep ="") ,"=",x_new ,"\n")
+        }
+      if( iter == maxiter ) {
+          cat ("No hubo convergencia luego de ",iter ," iteraciones ","\n")
+          } else {
+          cat ("Si hubo convergencia luego de ",iter ," iteraciones ","\n")
+                }
+    salida <-list ( raiz = x_new , f_raiz = FUN (x_new ) , iter = iter )
+    return ( salida )
+      }
+
+nr(FUN = f1,dFUN = f2,x0=2)
 
 ```
 
