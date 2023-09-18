@@ -1,0 +1,97 @@
+---
+title: "Tarea Estructuras de Control - While"
+author: "Grupo M - Lucas Bizoso, Germán Miranda, Samuel Porras"
+date: "2023-09-14"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#Ejercicio Fórmula de Viéte
+
+Empezamos primero definiendo la función "viete_k" que nos va a devolver según el k que le ingresemos, el valor aproximado de PI.
+
+```{r def_viete}
+viete_k = function(x){
+  rai=sqrt(2)
+  for (i in 3:x) {
+    rai= sqrt(2+ rai)
+    PI =(2^ i)*sqrt(2-rai)
+    }
+    return(PI)
+}
+```
+
+Ahora definimos una tolerancia de 5 decimales y buscamos en qué "K" la función mantiene esa precisión.
+
+```{r }
+k=3
+tolerancia = 1e-5
+precision = 1
+while (precision>tolerancia) {
+  precision = abs(viete_k(k)-pi)
+  k=k+1
+}
+## Corrijo la iteración
+k=k-1
+
+print(paste("El k mínimo es ",k))
+```
+
+Con el k hallado en el paso anterior, calculamos la diferencia entre el valor real de PI y el valor dado por la fórmula.
+
+```{r}
+pres=list()
+for (i in 3:k) {
+  pres[i-2]=abs(viete_k(i)-pi)
+} 
+pres=unlist(pres)
+```
+
+
+Defino el vector "equis" para graficar los valores de k y luego procedemos a graficar la precisión en función del k
+
+```{r ,echo=FALSE}
+library(ggplot2)
+equis=seq(3,k,1)
+ggplot()+geom_point(aes(x=equis,y=pres)) + xlab("Valores K") + ylab("Margen de error")+ ggtitle("Aproximación de Fórmula de Véite al valor PI según K")
+
+```
+
+
+# Ejercicio Obtener primer Fibonacci mayor que 100
+
+Para obtener el primer Fibonacci mayor que 100 usaremos la función que definimos en la entrega de "IF FOR". La misma mientras no encuentre el valor mayor que k, volverá a hacer un Fibonacci con un valor más hasta encontrarlo. 
+
+```{r def_fibonacci}
+#Fibonacci
+fibonacci <- function(k){  #Primeros k elementos de la secuencia de Fibonacci
+    cuant <- rep(0,k)
+    for (i in 1:k){
+        if(i==1){
+            cuant[i] <- 0
+        }else if(i==2){
+            cuant[i] <- 1
+        }else{
+            cuant[i] <- cuant[i-1] + cuant[i-2]
+        }
+    }
+    return(cuant)
+}
+
+```
+
+
+```{r}
+inicio=0
+fin=100
+i=3
+
+while (inicio<fin) {
+  inicio=fibonacci(i)[i]
+  i=i+1
+}
+print(paste("El primer Fibonacci mayor a 100 aparece en la iteración ",i-1," y su valor es",fibonacci(i-1)[i-1]))
+```

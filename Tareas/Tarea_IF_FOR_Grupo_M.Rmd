@@ -1,0 +1,84 @@
+---
+title: "Tarea Estructuras de Control - IF y FOR"
+author: "Grupo M - Lucas Bizoso, Germán Miranda, Samuel Porras"
+date: "2023-09-14"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Ejercicio Impuesto a las Galletitas
+
+Para comenzar el ejercicio, primero definimos la función "impuesto_galletas" y con la estructura de control IF, definimos según la entrada, el impuesto correspondiente.
+
+```{r def_galletitats}
+impuesto_galletas <- function(gasto){
+    if(5<gasto & gasto<=10){
+        imp=0.1
+    }else if(gasto>10 & gasto<=20){
+        imp=0.15
+    }else if(gasto>20){
+        imp=0.25
+    }else{imp=0}
+     return(imp) #acá solo entra cuando el gasto es menor o igual a 5
+}
+```
+
+Con la función ya definida, podemos probar algunos casos para corroborar que los impuestos se imputan correctamente.
+
+```{r test_galletitas}
+
+gasto=4
+impuesto_galletas(gasto)
+
+gasto=8
+impuesto_galletas(gasto)
+
+gasto=15
+impuesto_galletas(gasto)
+
+gasto=25
+impuesto_galletas(gasto)
+
+```
+
+
+## Ejercicio Secuencia de Fibonacci
+
+Para obtener poder calcular los primeros K elemetos de la serie, definimos la función "fibonacci" que define el vector según el k inicial que le pasemos.
+
+```{r def_fibonacci}
+#Fibonacci
+fibonacci <- function(k){  #Primeros k elementos de la secuencia de Fibonacci
+    cuant <- rep(0,k)
+    for (i in 1:k){
+        if(i==1){
+            cuant[i] <- 0
+        }else if(i==2){
+            cuant[i] <- 1
+        }else{
+            cuant[i] <- cuant[i-1] + cuant[i-2]
+        }
+    }
+    return(cuant)
+}
+
+```
+
+Para corroborar, probamos con algunos valores de K.
+
+```{r}
+k=5
+fibonacci(k)
+
+k=10
+fibonacci(k)
+
+k=15
+fibonacci(k)
+
+```
+
+
