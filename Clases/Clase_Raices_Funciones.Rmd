@@ -52,6 +52,9 @@ biseccion(fun=fun,iter=iter,tol=tol,x_sup=x_sup,x_inf=x_inf,maxiter=maxiter,ampl
 
 ```
 
+
+# CLASE 18/9/2023
+
 # Método de Punto Fijo
 
 
