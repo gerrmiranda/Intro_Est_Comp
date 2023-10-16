@@ -176,8 +176,9 @@ Vamos a comparar gráficamente
 
 x<-seq(0.5,3,0.1)
 lgx <- length(x)
-seq_nr <- list()
 
+
+seq_nr <- list()
 
 for (i in 1:lgx) {   
   seq_nr[i]=comparacion(FUN=FUN,FUN1=FUN1,FUN2=FUN2,conFUN=conFUN,x0=x[i])$inter_nr
