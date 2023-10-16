@@ -1,0 +1,210 @@
+---
+title: "Tarea 4"
+author: "Grupo M"
+date: "2023-10-15"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Ejercicio 3
+
+Este es el código base que usaremos, ya hecho en clase.
+
+```{r}
+ipf<-function(FUN,x0,tol=1e-5,maxiter=1000){
+	x_new <- FUN(x0)
+	iter<-1
+	while(abs(x_new-x0) > tol & iter<maxiter){
+		x0<-x_new
+		x_new <- FUN(x0)
+		if(is.nan(x_new)){
+		stop("No puede evaluar")
+		}
+		iter <- iter + 1
+		print(x_new)
+		print(x0)
+		print(iter)
+		
+	}
+	salida<-list(pf=x_new, iter=iter)
+	return(salida)
+}
+```
+
+Aclarar que el argumento FUN debe ser una función contractiva.
+
+
+Este es la nueva función:
+```{r}
+ipf_new <-function(FUN,x0,tol=1e-5,maxiter=1000,trace=TRUE){
+    x_new <- FUN(x0)
+    iter<-1
+    print(iter)
+    while(abs(x_new-x0) > tol & iter<maxiter){
+        x0<-x_new
+        x_new <- FUN(x0)
+        if(is.nan(x_new)){
+            stop("No puede evaluar")
+        }
+        iter <- iter + 1
+        if(trace==TRUE){ #se imprimirá según diga el argumento trace
+            print(x_new)
+            print(x0)
+            if(iter==maxiter){
+                cat("No hubo convergencia luego de ",iter ," iteraciones ","\n")
+            }else{
+                cat ("Si hubo convergencia luego de ",iter ," iteraciones","\n")
+        }
+        }
+    }
+    salida<-list(pf=x_new, iter=iter)
+    return(salida)
+}
+```
+Ejemplo:
+Usamos el caso dado en clase para hallar la raiz de log(x)-exp(-x)
+La función que usaremos será x-log(x)+exp(-x)
+```{r}
+fcon <- function(x) return(x-log(x)+exp(-x))
+```
+Caso con trace = TRUE
+```{r}
+ipf_new(FUN = fcon,x0 = 1,trace=TRUE)
+```
+Caso con trace = FALSE
+```{r}
+ipf_new(FUN = fcon,x0 = 1,trace=FALSE)
+```
+
+## Ejercico 5
+
+Este es el código resultante del método de Halley, modificando el ya dado de N-R.
+FUN es la funcióna a la que queremos hallar la raiz, FUN1 es un derivada primera y FUN2 es su derivada segunda.
+
+```{r}
+
+halley <- function(FUN,FUN1,FUN2,x0,tol=1e-5,maxiter=1000,trace=TRUE){
+    x_new <- x0 - FUN(x0)/(FUN1(x0)-(FUN(x0)*FUN2(x0)/(2*FUN(x0))))
+    iter <- 1
+    while(abs(x_new-x0) > tol & iter<maxiter){
+        x0 <- x_new
+        x_new <- x0 - FUN(x0)/(FUN1(x0)-(FUN(x0)*FUN2(x0)/(2*FUN(x0))))
+        iter <- iter + 1
+        if(trace==TRUE){
+            if(iter==maxiter) {
+                cat("No hubo convergencia luego de",iter,"iteraciones","\n")
+            } else {
+                cat("Si hubo convergencia luego de",iter,"iteraciones","\n")
+            }
+        }
+    }
+    salida<-list(raiz=x_new,f_raiz=FUN(x_new),iter=iter) 
+    return(salida)
+}
+```
+
+Copiamos los otros dos métodos
+
+```{r}
+ipf <- function(FUN,x0,tol=1e-5,maxiter=1000,trace=TRUE){
+    x_new <- FUN(x0)
+    iter<-1
+    while(abs(x_new-x0) > tol & iter<maxiter){
+        x0<-x_new
+        x_new <- FUN(x0)
+        if(is.nan(x_new)){
+            stop("No puede evaluar")
+        }
+        iter <- iter + 1
+        if(trace==TRUE){
+	        if(iter==maxiter){
+		        cat("No hubo convergencia luego de",iter,"iteraciones","\n")
+	        }else{
+		        cat("Si hubo convergencia luego de",iter,"iteraciones","\n")
+	        }
+	    }
+    }
+    salida <- list(pf=x_new, iter=iter)
+    return(salida)
+}
+
+nr <- function(FUN,FUN1,x0,tol=1e-5,maxiter=1000,trace=TRUE){
+	x_new <- x0 - FUN(x0)/FUN1(x0)
+	iter <- 1
+	while(abs(x_new-x0) > tol & iter<maxiter){
+		x0 <- x_new
+		x_new <- x0 - FUN(x0)/FUN1(x0)
+		iter <- iter + 1
+	    if(trace==TRUE){
+	        if(iter==maxiter){
+		        cat("No hubo convergencia luego de",iter,"iteraciones","\n")
+	        }else{
+		        cat("Si hubo convergencia luego de",iter,"iteraciones","\n")
+	        }
+	    }
+    }
+	salida<-list(raiz = x_new, f_raiz = FUN(x_new), iter = iter)
+	return(salida)
+}
+```
+Y creamos una función para comparar los distintos métods. El argumento conFUN es la función que utilizará el método de IPF.
+```{r}
+comparacion <- function(FUN,FUN1,FUN2,conFUN,x0,tol=1e-5,maxiter=1000,trace=FALSE){
+    nr <- nr(FUN,FUN1,x0,tol,maxiter ,trace)
+    ipf <- ipf(conFUN,x0,tol,maxiter,trace) 
+    halley <- halley(FUN,FUN1,FUN2,tol,maxiter,x0,trace)
+    salida <- list(inter_nr=nr$iter,raiz_nr=nr$raiz,
+                   inter_ipf=ipf$iter,raiz_ipf=ipf$pf,
+                   inter_halley=halley$iter,raiz_halley=halley$raiz)
+    return(salida)
+}
+```
+Las funciones que vamos a usar:
+```{r}
+FUN <- function(x) log(x) - exp(-x)
+FUN1 <- function(x) 1/x + exp(-x)
+FUN2 <- function(x) -1/(x**2) -exp(-x)
+conFUN <- function(x) x-log(x)+exp(-x)
+comparacion(FUN=FUN,FUN1=FUN1,FUN2=FUN2,conFUN=conFUN,x0=1)
+```
+Vamos a comparar gráficamente
+
+```{r, error=FALSE,warning=FALSE, echo=FALSE}
+
+x<-seq(0.5,3,0.1)
+lgx <- length(x)
+seq_nr <- list()
+
+
+for (i in 1:lgx) {   
+  seq_nr[i]=comparacion(FUN=FUN,FUN1=FUN1,FUN2=FUN2,conFUN=conFUN,x0=x[i])$inter_nr
+}
+
+seq_ipf <- list()
+
+for (i in 1:lgx)  {
+    seq_ipf[i]=comparacion(FUN=FUN,FUN1=FUN1,FUN2=FUN2,conFUN=conFUN,x0=x[i])$inter_ipf
+}
+
+seq_ha <- list()
+
+for (i in 1:lgx)  {
+    seq_ha[i]=comparacion(FUN=FUN,FUN1=FUN1,FUN2=FUN2,conFUN=conFUN,x0=x[i])$inter_ha
+
+}
+seq_nr_v=unlist(seq_nr)
+seq_ipf_v=unlist(seq_ipf)
+seq_ha_v=unlist(seq_ha)
+
+library(ggplot2)
+
+ggplot() + geom_line(aes(x=x,y=seq_nr_v,colour="red"),colour="red") + geom_line(aes(x=x,y=seq_ipf_v),colour="green") + geom_line(aes(x=x,y=seq_ha_v),colour="blue") + xlab("Valores de x") + ylab("Iteraciones")
+
+```
+
+En el gráfico se pueden ver la cantidad de iteraciones para cáda uno de los métodos. La línea azul refiere al método de Halley, la roja al método de N-R y la verde al método de IPF.
+
+
