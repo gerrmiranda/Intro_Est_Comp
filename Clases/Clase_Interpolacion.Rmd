@@ -1,0 +1,23 @@
+---
+title: "Clase_Interpolacion"
+output: pdf_document
+date: "2023-09-27"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Interpolación
+
+con las raíces del polinomio de Chevyschev fijo los nodos y con Lagrange las distancias entre los nodos
+
+# Interpolacion cnon Splines
+
+
+
+```{r}
+
+
+```
+

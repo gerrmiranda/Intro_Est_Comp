@@ -21,7 +21,7 @@ fun = function (x){
       }
 
 
-biseccion = function (fun,iter,tol,x_sup,x_inf,maxiter,amplitud) {
+biseccion = function (fun,iter,tol=1e-5,x_sup,x_inf,maxiter=1000,amplitud=Inf) {
             fx_sup <- fun(x_sup)
             fx_inf <- fun(x_inf)
               
@@ -51,3 +51,98 @@ biseccion(fun=fun,iter=iter,tol=tol,x_sup=x_sup,x_inf=x_inf,maxiter=maxiter,ampl
 ## PENDIENTE APROXIMAR A PI USANDO FUNCIÓN COSENO
 
 ```
+
+
+# CLASE 18/9/2023
+
+# Método de Punto Fijo
+
+
+```{r}
+
+g1 = function(x) {exp(exp(-x))}
+
+FUN=g1
+x0=1
+
+ipf <- function ( FUN ,x0 , tol =1e-5 , maxiter =1000) {
+      x_new <- FUN (x0)
+      iter <-1
+      while ( abs (x_new - x0 ) > tol & iter < maxiter ) {
+      x0 <-x_new
+      x_new <- FUN ( x0 )
+      iter <- iter + 1
+      }
+      salida <-list (pf=x_new , iter = iter )
+      return ( salida )
+      }
+
+ipf(FUN = g1,x0=1)
+
+#biseccion(fun=g1,tol = 1e-6,iter=0, x_inf =1, x_sup=2)
+
+```
+
+
+## IPF con el trace
+
+```{r}
+
+
+ipf <- function ( FUN ,x0 , tol =1e-5 , maxiter=1000,trace=TRUE) {
+                 x_new <- FUN ( x0 )
+                  iter <-0
+            while (abs( x_new - x0 ) > tol & iter < maxiter ){
+                  x0 <-x_new
+                  x_new <- FUN (x0)
+                 iter <- iter + 1
+              if (trace==TRUE) {
+              cat ( paste ("x_",iter , sep ="") ,"=",x_new ,"\n")
+              }
+              }
+              if( iter == maxiter ) {
+            cat ("No hubo convergencia luego de ",iter ," iteraciones ","\n")
+              } else {
+            cat ("Si hubo convergencia luego de ",iter ," iteraciones ","\n")
+          }
+        salida <-list (pf=x_new , iter = iter )
+        return ( salida )
+}
+
+ipf(FUN = g1,x0=1,trace = FALSE)
+#lubridate librería para fechas
+```
+
+
+# Método Newton-Raphson (NR)
+
+
+```{r}
+
+f1= function(x) {log(x)-exp(-x)}
+f2= function(x) {1/x+exp(-x)}
+
+nr <- function ( FUN , dFUN , x0 , tol = 1e-5 , maxiter =1000) {
+          x_new <- x0 - FUN ( x0 )/ dFUN ( x0 )
+          iter <- 0
+      while ( abs (x_new - x0 ) > tol & iter < maxiter ) {
+            x0 <- x_new
+            x_new <- x0 - FUN ( x0 )/ dFUN ( x0 )
+            iter <- iter + 1
+      cat ( paste ("x_",iter , sep ="") ,"=",x_new ,"\n")
+        }
+      if( iter == maxiter ) {
+          cat ("No hubo convergencia luego de ",iter ," iteraciones ","\n")
+          } else {
+          cat ("Si hubo convergencia luego de ",iter ," iteraciones ","\n")
+                }
+    salida <-list ( raiz = x_new , f_raiz = FUN (x_new ) , iter = iter )
+    return ( salida )
+      }
+
+nr(FUN = f1,dFUN = f2,x0=2)
+
+```
+
+
+
