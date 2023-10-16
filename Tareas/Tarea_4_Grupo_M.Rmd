@@ -150,7 +150,9 @@ nr <- function(FUN,FUN1,x0,tol=1e-7,maxiter=1000,trace=TRUE){
 	return(salida)
 }
 ```
-Y creamos una función para comparar los distintos métods. El argumento conFUN es la función que utilizará el método de IPF.
+
+Y creamos una función para comparar los distintos métodos El argumento conFUN es la función que utilizará el método de IPF.
+
 ```{r}
 comparacion <- function(FUN,FUN1,FUN2,conFUN,x0,tol=1e-5,maxiter=1000,trace=FALSE){
     nr <- nr(FUN,FUN1,x0,tol=tol,maxiter=maxiter,trace=trace)
@@ -162,7 +164,9 @@ comparacion <- function(FUN,FUN1,FUN2,conFUN,x0,tol=1e-5,maxiter=1000,trace=FALS
     return(salida)
 }
 ```
+
 Las funciones que vamos a usar:
+
 ```{r}
 FUN <- function(x) log(x) - exp(-x)
 FUN1 <- function(x) 1/x + exp(-x)
