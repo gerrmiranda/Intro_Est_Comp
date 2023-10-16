@@ -86,7 +86,7 @@ FUN es la funcióna a la que queremos hallar la raiz, FUN1 es un derivada primer
 
 ```{r}
 
-halley <- function(FUN,FUN1,FUN2,x0,tol=1e-9,maxiter=1000,trace=TRUE){
+halley <- function(FUN,FUN1,FUN2,x0,tol=1e-5,maxiter=1000,trace=TRUE){
     x_new <- x0 - FUN(x0)/(FUN1(x0)-(FUN(x0)*FUN2(x0)/(2*FUN1(x0))))
     iter <- 1
     while(abs(x_new-x0) > tol & iter<maxiter){
@@ -109,7 +109,7 @@ halley <- function(FUN,FUN1,FUN2,x0,tol=1e-9,maxiter=1000,trace=TRUE){
 Copiamos los otros dos métodos
 
 ```{r}
-ipf <- function(FUN,x0,tol=1e-7,maxiter=1000,trace=TRUE){
+ipf <- function(FUN,x0,tol=1e-5,maxiter=1000,trace=TRUE){
     x_new <- FUN(x0)
     iter<-1
     while(abs(x_new-x0) > tol & iter<maxiter){
@@ -131,7 +131,7 @@ ipf <- function(FUN,x0,tol=1e-7,maxiter=1000,trace=TRUE){
     return(salida)
 }
 
-nr <- function(FUN,FUN1,x0,tol=1e-7,maxiter=1000,trace=TRUE){
+nr <- function(FUN,FUN1,x0,tol=1e-5,maxiter=1000,trace=TRUE){
 	x_new <- x0 - FUN(x0)/FUN1(x0)
 	iter <- 1
 	while(abs(x_new-x0) > tol & iter<maxiter){
@@ -153,9 +153,9 @@ nr <- function(FUN,FUN1,x0,tol=1e-7,maxiter=1000,trace=TRUE){
 Y creamos una función para comparar los distintos métods. El argumento conFUN es la función que utilizará el método de IPF.
 ```{r}
 comparacion <- function(FUN,FUN1,FUN2,conFUN,x0,tol=1e-5,maxiter=1000,trace=FALSE){
-    nr <- nr(FUN,FUN1,x0,tol=tol,maxiter=maxiter,trace=trace)
-    ipf <- ipf(conFUN,x0,tol=tol,maxiter=maxiter,trace=trace) 
-    halley <- halley(FUN,FUN1,FUN2,x0,tol=tol,maxiter=maxiter,trace=trace)
+    nr <- nr(FUN=FUN,FUN1=FUN1,x0=x0,tol=tol,maxiter=maxiter,trace=trace)
+    ipf <- ipf(FUN=conFUN,x0=x0,tol=tol,maxiter=maxiter,trace=trace) 
+    halley <- halley(FUN=FUN,FUN1=FUN1,FUN2=FUN2,x0=x0,tol=tol,maxiter=maxiter,trace=trace)
     salida <- list(inter_nr=nr$iter,raiz_nr=nr$raiz,
                    inter_ipf=ipf$iter,raiz_ipf=ipf$pf,
                    inter_halley=halley$iter,raiz_halley=halley$raiz)
@@ -166,9 +166,9 @@ Las funciones que vamos a usar:
 ```{r}
 FUN <- function(x) log(x) - exp(-x)
 FUN1 <- function(x) 1/x + exp(-x)
-FUN2 <- function(x) -1/(x**2) -exp(-x)
+FUN2 <- function(x) (-1/(x**2)) - exp(-x)
 conFUN <- function(x) x-log(x)+exp(-x)
-comparacion(FUN=FUN,FUN1=FUN1,FUN2=FUN2,conFUN=conFUN,x0=1)
+comparacion(FUN=FUN,FUN1=FUN1,FUN2=FUN2,conFUN=conFUN,x0=3)
 ```
 Vamos a comparar gráficamente
 
@@ -176,8 +176,9 @@ Vamos a comparar gráficamente
 
 x<-seq(0.5,3,0.1)
 lgx <- length(x)
-seq_nr <- list()
 
+
+seq_nr <- list()
 
 for (i in 1:lgx) {   
   seq_nr[i]=comparacion(FUN=FUN,FUN1=FUN1,FUN2=FUN2,conFUN=conFUN,x0=x[i])$inter_nr
