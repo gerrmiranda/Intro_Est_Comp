@@ -1,0 +1,103 @@
+---
+title: "Clase_Integracion_Y_Cuadratura_Numérica"
+output: pdf_document
+date: "2023-10-18"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Clase integración numérica
+
+- Integración numérica para integrales definidas
+- Cuadratura numérica (gaussiana) para integrales no definidas (de un A real a inf o de inf a un A real)
+
+
+# Método de trapecio
+
+
+```{r método trapecio}
+
+ trapecio <- function ( ftn , a , b , n = 100) {
+ # integraci´on nuemrica de ftn desda a hasta b
+ # usando la regla del trapecio extendida con n intervalos
+ #
+ # ftn es una funci´onn univariada
+ # se asume a < b, con n is entero positivo
+  
+ h <- (b - a )/n
+ x.vec <- seq(a , b , by = h)
+ f.vec <- sapply (x.vec,ftn)
+ Q <- h*(f.vec [1] /2 + sum( f.vec [2: n ]) + f.vec [n +1]/2)
+ return (Q)
+ }
+ 
+
+# ahora probamos
+
+ftn6 = function(x) return (4*x**3)
+
+trapecio(ftn = ftn6,0,1) 
+
+```
+
+# Método simpson
+
+Aproximo la función por un Polinomio de Newton de grado 2
+
+```{r simpson, echo=FALSE}
+
+simpson <- function (ftn, a, b, tol = 1e-8, verbose = FALSE ) {
+ # numerical integral of ftn from a to b
+ # using Simpson ’s rule with tolerance tol
+ #
+ # ftn is a function of a single variable and a < b
+ # if verbose is TRUE then n is printed to the screen
+
+ # initialise
+n <- 4
+h <- (b - a )/4
+
+fx <- sapply ( seq (a , b , by = h) , ftn )
+
+S <- sum( fx*c(1 , 4, 2 , 4 , 1) )*h/3
+
+S.diff <- tol + 1 # ensures we loop at least once
+# increase n until S changes by less than tol
+
+while (S.diff > tol ) {
+  # cat( ’n =’, n, ’S =’, S, ’\n ’) # diagnostic
+    S.old <- S
+    n <- 2*n
+    h <- h/2
+    fx [seq(1,n +1,by = 2) ] <- fx # reuse old ftn values
+    fx [seq (2 , n , by = 2)] <- sapply (seq (a+h , b-h , by = 2*h), ftn)
+    
+    S <- h/3*( fx [1]  + 4* sum ( fx [seq (2 , n , by = 2) ]) +
+          2* sum ( fx [ seq (3 , n -1 , by = 2) ]) + fx [ n +1])
+    
+    S.diff <- abs( S - S.old )
+    }
+  if (verbose) cat ('partition size', n ,'and tolerance', tol, '\n')
+  return (S)
+}
+
+
+simpson(ftn6,0,1,verbose =TRUE)
+trapecio(ftn6,0,1,n=8)
+```
+Pruebo los métodos con otras funciones
+
+```{r}
+ftn7 =function(x) return(1.25+sin(x/2)+3)
+
+simpson(ftn7,0,9,verbose =TRUE)
+
+trapecio(ftn7,0,9,n=32)
+
+```
+
+
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
