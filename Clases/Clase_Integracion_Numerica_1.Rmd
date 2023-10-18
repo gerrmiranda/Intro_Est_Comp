@@ -16,6 +16,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Método de trapecio
 
+Aproximo la función por un polinomio de newton de grado 1
 
 ```{r método trapecio}
 
