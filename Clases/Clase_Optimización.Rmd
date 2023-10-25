@@ -8,7 +8,9 @@ date: "2023-10-25"
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+# Sección Áurea
+
+## Construyo una función de ejemplo
 
 
 ```{r}
@@ -23,29 +25,29 @@ abline(h=0)
 
 ```
 
+Construyo la función para iterar
 
 
 ```{r}
 
-
 while (amplitud>tol & iter<maxiter){
-      if( x_d-x_m > x_m - x_i)
+      if( x_d - x_m > x_m - x_i)
       {
-          se elije x_k en el intervalo (x_m , x_d)
-          si f( x_k) > f(x_m)
+          #se elije x_k en el intervalo (x_m , x_d)
+          if(f(x_k) > f(x_m))
       {
-      x_i <-x_m
-      x_m <-x_k
-    } si no x_d <-x_k
+      x_i = x_m
+      x_m = x_k
+    } else { x_d = x_k}
     }
-    si no
+    else
         {
-          se elije x_k en el intervalo (x_i , x_m)
-            si f( x_k > f(x_m)
+          #se elije x_k en el intervalo (x_i , x_m)
+           if (f(x_k) > f(x_m))
           {
-            x_d <-x_m
-            x_m <-x_k
-          } si no x_i <-x_k
+            x_d = x_m
+            x_m = x_k
+          } else x_i = x_k
     }
 # por ultimo se actualiza la condicion y se incrementa el iterador
     }
