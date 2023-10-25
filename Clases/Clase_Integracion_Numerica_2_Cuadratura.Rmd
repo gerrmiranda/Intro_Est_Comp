@@ -8,10 +8,9 @@ date: "2023-10-23"
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r}
-install.packages("statmod")
-library(statmod)
 
+```{r}
+library(statmod)
 ```
 
 ## Método Gauss-LEGENDRE
@@ -21,8 +20,7 @@ Hago un cambio de variable para pasar de intervalo [a,b] al [-1,1]
 x= (t-(b+a)/2)/((b-a)/2)
 
 
-```{r}
-
+```{r ,eval=FALSE}
 cuadratura <- function ( FUN ,n =2 , cual='legendre'){
                       xw <-gauss.quad(n , kind = cual )
                       nodos <-xw$ nodes
@@ -36,23 +34,30 @@ I2 <- cuadratura ( fx ,2)
 I3 <- cuadratura ( fx ,3)
 
 I4 <- cuadratura ( fx ,4)
+
 ```
 
 ## Método Gauss-HERMITE
 
 Hago un cambio de variable para pasar de intervalo [-Inf,Inf] al [-1,1]
 
-!['Captura 1'](T:/Curso_EST_COMP/Intro_Est_Comp/Clases/Prints/Captura1.JPG)
-
-
-```{r}
-
-```
-
+(Impropia para los dos lados)
 
 ## Método Gauss-Laguerre
 
 Nos sirve para evaluar integrales de la forma: 
+
+(intervalos abiertos)
+
+!['Captura 1'](Prints/Captura1.JPG)
+
+
+```{r}
+
+rexp(1000,rate=1)
+
+```
+
 
 
 
