@@ -1,0 +1,63 @@
+---
+title: "Optimización"
+output: pdf_document
+date: "2023-10-25"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+
+```{r}
+
+f1= function(x) x-x*log(x)-exp(-x)
+
+
+x=seq(0,5,0.1)
+
+plot(x,f1(x),type='l')
+abline(h=0)
+
+```
+
+
+
+```{r }
+
+
+
+while (amplitud>tol & iter<maxiter){
+      si x_d - x_m > x_m - x_i
+      {
+          se elije x_k en el intervalo (x_m , x_d)
+          si f( x_k) > f(x_m)
+      {
+      x_i <-x_m
+      x_m <-x_k
+    } si no x_d <-x_k
+    }
+    si no
+        {
+          se elije x_k en el intervalo (x_i , x_m)
+            si f( x_k > f(x_m)
+          {
+            x_d <-x_m
+            x_m <-x_k
+          } si no x_i <-x_k
+    }
+# por ultimo se actualiza la condicion y se incrementa el iterador
+    }
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
