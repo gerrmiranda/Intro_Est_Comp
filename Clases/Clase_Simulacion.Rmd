@@ -11,7 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ## R Markdown
 
 
-```{r cars}
+```{r }
 set.seed(1)
 
 u = runif(10)
@@ -21,10 +21,6 @@ f = function (u,p) {
 }
 
 f(u,p=0.5)
-
-
-
-
 ```
 
 ## Including Plots
@@ -33,6 +29,7 @@ You can also embed plots, for example:
 
 ```{r pressure, echo=FALSE}
 plot(pressure)
+
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
