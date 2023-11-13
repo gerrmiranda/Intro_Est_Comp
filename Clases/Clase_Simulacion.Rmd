@@ -23,12 +23,40 @@ f = function (u,p) {
 f(u,p=0.5)
 ```
 
-## Including Plots
+## Clase 13/11
 
-You can also embed plots, for example:
+# Simular una poisson
 
 ```{r pressure, echo=FALSE}
-plot(pressure)
+
+lamda=2
+
+out = sapply(1:100, function(i) {
+  u = runif(10)
+  x = -log(1-u)/lamda  
+  y=cumsum(x)
+  length(which(y<=1))
+})
+
+
+set.seed(1)
+
+mean(rpois(100,2))
+var(rpois(100,2))
+
+```
+
+## Simular una NORMAL
+
+Generamos uniformes 0-1  
+
+```{r}
+set.seed(1)
+u = runif(100)
+
+mean(u)
+
+sum(u)- (length(u)*0.5) #Esperanza
 
 ```
 
