@@ -33,7 +33,7 @@ j <-j +1
 x[i]<-Y
 J <-J + j
 }
-print( J )
+print(J)
 return( x )
 }
 
