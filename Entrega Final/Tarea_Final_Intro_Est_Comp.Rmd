@@ -11,9 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## R Markdown
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
 
 ```{r cars}
 
@@ -23,20 +21,20 @@ p3 = 500
 p4 = 900
 p5 = 1500
 
-p_actuales = list(200,350,500,900,1500)
+p_actuales = c(p1,p2,p3,p4,p5)
 
-p_actuales = c(200,350,500,900,1500)
+q1=5050
+q2=700
+q3=1000
+q4=200
+q5=700
 
-q_actuales = c(5050,700,1000,200,700)
+q_actuales = c(q1,q2,q3,q4,q5)
+
 sum(q_actuales)
 
-q1 = 5050
-q2 = 700
-q3 = 1000
-q4 = 200
-q5 = 700
-
 I = p1*q1 + p2*q2 + p3*q3 + p4*q4 + p5*q5
+
 
 p_nuevos = list (200,400,900)
 
@@ -47,7 +45,7 @@ pp3 = 1000
 
 
 qq1=0
-for (i in 1:5) {
+for (i in 1:length(p_actuales)) {
   if (p_actuales[[i]]>=pp1){
     qq1= qq1 +q_actuales[[i]]
   }
@@ -80,15 +78,7 @@ Ifinal = pp1*qq1 + pp2*qq2 + pp3*qq3
 
 I
 Ifinal
-I-Ifinal
-
-
-
-
-qq1 = q1+q2
-qq2 = q3+ q4
-qq3 = q5
-
+Ifinal-I
 
 
 

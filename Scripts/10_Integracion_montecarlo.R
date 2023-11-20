@@ -70,15 +70,10 @@ hx <- function (x){cos(2*x) -0.3*sin(x) +1}
 (I<-integrate(hx,2,4))
 
 x<-seq(a,b,0.01)
-
 plot(x,hx(x),type="l")
-
 abline(v=a,col=2)
-
 abline(v=b,col=4)
-
 abline(h=c,col=2)
-
 abline(h=2.01,col=4)
 
 # area del rectangulo
@@ -100,20 +95,39 @@ T<-u2<hx(u1)
 table(T)
 
 p <- mean(u2<hx(u1))
+p
 
 # integral
 
-A*p
+
 
 plot(u1,u2,col=T+1)
 
 lines(x,hx(x),type="l")
 
 
+res= c()
+for (i in 1:1000) {
+n <- 1000
+u1 <- runif(n,a,b)
+u2 <- runif(n,c,d)
+T<-u2<hx(u1)
+p <- mean(u2<hx(u1))
+
+res=c(res,A*p)
+}
+
+res
+i=1
+
+mean(res[i]) - (1.96*(res[i] * (1-res[i]
+                                )))/sqrt(n)
+
+mean(res[i]) + (1.96*(res[i] * (1-res[i]
+)))/sqrt(n)
+
 
 #Ejemplo de Jones 
-
-
 
 f <- function(x) x^3 - 7*x^2 + 1
 
