@@ -1,0 +1,523 @@
+---
+title: "Capítulo20"
+author: "Ramón Álvarez-Vaz"
+date: "`r Sys.Date()`"
+output:
+  pdf_document: 
+    toc: yes
+    fig_caption: yes
+    number_sections: yes
+    keep_tex: yes
+  html_document:
+    toc: yes
+    fig_caption: yes
+    number_sections: yes
+    keep_md: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Transformaciones 
+
+```{r}
+y<-seq(0,1,0.01)
+plot(2*y+1,y)
+
+plot(2*y+1,y,xlim=c(0,4))
+plot(2*y+1,y,xlim=c(0,4),type="l")
+x<-c(seq(0,1,0.01),2*y+1,seq(3,4,0.01))
+y<-c(rep(0,101),y,rep(1,101))
+
+f<-function(x)return(2*x+1)
+
+plot(x,y,type="l")
+segments(0,0.2,f(0.2),0.2,col=2)
+segments(0,0.4,f(0.4),0.4,col=3)
+segments(f(0.2),0,f(0.2),0.2,col=2)
+segments(f(0.4),0,f(0.4),0.4,col=3)
+abline(h=0,col="grey")
+
+g<-function(x)return(-log(1-x))
+z<-seq(0,1,0.01)
+plot(g(z),z,type="l",ylab="U",xlab="X")
+
+```
+
+# Con curve 
+
+```{r}
+curve(g,0,4)
+segments(0,0.15,g(0.15),0.15,col=2)
+segments(0,0.2,g(0.2),0.2,col=3)
+segments(g(0.15),0,g(0.15),0.15,col=2)
+segments(g(0.2),0,g(0.2),0.2,col=3)
+segments(0,0.85,g(0.85),0.85,col=2)
+segments(0,0.9,g(0.9),0.9,col=3)
+segments(g(0.85),0,g(0.85),0.85,col=2)
+segments(g(0.9),0,g(0.9),0.9,col=3)
+
+abline(h=0,col="grey")
+
+```
+
+
+# Como son las funciones que simulan distribuciones en R?
+
+
+
+
+## Random.seed 
+Es un vector de enteros, que contiene el estado del generador de números aleatorios (RNG) con el que va generar de números aleatorios en R. Se puede guardar y restaurar, pero no debe ser alterada por el usuario.
+
+
+## Wichmann-Hill
+
+The seed, .Random.seed[-1] == r[1:3] is an integer vector of length 3, where each r[i] is in 1:(p[i] - 1), where p is the length 3 vector of primes, p = (30269, 30307, 30323). The Wichmann–Hill generator has a cycle length of 6.9536e12 (= prod(p-1)/4, see Applied Statistics (1984) 33, 123 which corrects the original article).
+
+## Marsaglia-Multicarry":
+
+A multiply-with-carry RNG is used, as recommended by George Marsaglia in his post to the mailing list ‘sci.stat.math’. It has a period of more than 2^60 and has passed all tests (according to Marsaglia). The seed is two integers (all values allowed).
+ 
+## Super-Duper
+
+Marsaglia's famous Super-Duper from the 70's. This is the original version which does not pass the MTUPLE test of the Diehard battery. It has a period of about 4.6*10^18 for most initial seeds. The seed is two integers (all values allowed for the first seed: the second must be odd).
+  
+```{r}
+ set.seed(42)
+runif(2)
+#[1] 0.9148060 0.9370754
+ RNG.state <- .Random.seed
+ runif(2)
+#[1] 0.2861395 0.8304476
+ set.seed(42)
+ runif(4)
+#[1] 0.9148060 0.9370754 0.2861395 0.8304476
+ .Random.seed <- RNG.state
+ runif(2)
+#[1] 0.2861395 0.8304476
+
+```
+  
+ 
+
+# Ejemplo extraido de Robert and Casella
+
+```{r}
+Nsim=10^2
+y=runif(Nsim)
+y1=y[-Nsim]
+y2=y[-1]
+head(data.frame(y1,y2))
+plot(y,type="b")
+par(mfrow=c(1,3))
+hist(y)
+plot(y1,y2)
+acf(y)
+
+
+Nsim=10^4
+
+```
+
+# Number of random variables
+
+```{r}
+U=runif(Nsim)
+X=-log(U)
+#transforms of uniforms
+Y=rexp(Nsim)
+#exponentials from R
+par(mfrow=c(1,2))
+#plots
+hist(X,freq=F,main="Exp from Uniform")
+hist(Y,freq=F,main="Exp from R")
+
+```
+
+
+
+# Funciones  para simular distribuciones
+
+```{r}
+binom.cdf <- function(x, n, p) {
+    Fx <- 0
+  for (i in 0:x) {
+    Fx <- Fx + choose(n, i)*p^i*(1-p)^(n-i)
+     }
+  return(Fx)
+}
+
+n<-10
+p<-0.2
+y<-matrix(0,n+1,2)
+for (i in 1:n+1)
+{y[i,1]<-i-1
+y[i,2]<-binom.cdf(i-1,n,p)}
+
+cdf.sim <- function(F, ...) {
+  X <- 0
+  cont<-1
+  U <- runif(1)
+  while (F(X, ...) < U) {
+    X <- X + 1
+    cont<-cont+1
+    print(cont)
+  }
+  return(list(X,cont))
+}
+
+binom.sim <- function(n, p) {
+  X <- 0
+  px <- (1-p)^n
+  Fx <- px
+  U <- runif(1)
+  while (Fx < U) {
+    X <- X + 1
+    px <- ((n-X+1)*p*px)/((1-p)*X)
+    Fx <- Fx + px
+  }
+  return(X)
+}
+
+cdf.sim(binom.cdf, 100, 0.2)
+
+```
+
+
+# inputs
+
+```{r}
+par(mfrow=c(1,1))
+N <- 10000
+n <- 10
+p <- 0.7
+set.seed(100)
+# sample size
+# rv parameters
+# seed for RNG
+# generate sample and estimate p
+X <- rep(0, N)
+for (i in 1:N) X[i] <- binom.sim(n, p)
+phat <- rep(0, n+1)
+for (i in 0:n) phat[i+1] <- sum(X == i)/N
+phat.CI <- 1.96*sqrt(phat*(1-phat)/N)
+# plot output
+plot(0:n, dbinom(0:n, n, p), type="h", xlab="x", ylab="p(x)")
+points(0:n, dbinom(0:n, n, p), pch=19,col=2)
+points(0:n, phat, pch=3,col=4)
+points(0:n, phat+phat.CI, pch=3,col=4)
+points(0:n, phat-phat.CI, pch=3,col=4)
+
+# t<-10000
+# x<-matrix(0,t,3)
+# x[1,1]<-X_0
+
+
+
+X <- 0
+for (i in 1:n) {
+  U <- runif(1)
+  if (U < p) X <- X + 1
+}
+
+(X <- sum(runif(n) < p))
+
+test1<-function(){U=runif(3*10^4)
+U=matrix(data=U,nrow=3)
+X=-log(U)
+X=2* apply(X,2,sum)}
+
+system.time(test1())
+
+test2<-function(){X=rchisq(10^4,df=6)}  
+#sumamos las chicuadrados
+system.time(test2())
+
+```
+
+
+
+
+
+
+
+# Descomposición de Cholesky 
+
+En álgebra, la factorización o *descomposición de Cholesky* ![https://es.wikipedia.org/wiki/Factorizaci%C3%B3n_de_Cholesky] toma su nombre del matemático André-Louis Cholesky, quien encontró que una matriz simétrica definida positiva puede ser descompuesta como el producto de una matriz triangular inferior y la traspuesta de la matriz triangular inferior. La matriz *triangular inferior* es el triángulo de Cholesky de la matriz original positiva definida. El resultado de Cholesky ha sido extendido a matrices con entradas complejas. Es una manera de resolver sistemas de ecuaciones matriciales y se deriva de la factorización $LU$ con una pequeña variación.
+
+Cualquier matriz cuadrada $A$ con pivotes no nulos puede ser escrita como el producto de una matriz triangular inferior $L$ y una matriz triangular superior $U$; esto recibe el nombre de factorización $LU$. Sin embargo, si $A$ es simétrica y definida positiva, se pueden escoger los factores tales que $U$ es la transpuesta de $L$, y esto se llama la descomposición o factorización de Cholesky. Tanto la descomposición $LU$ como la descomposición de Cholesky son usadas para resolver sistemas de ecuaciones lineales. Cuando es aplicable, la descomposición de Cholesky es dos veces más eficiente que la descomposición $LU$.
+
+
+
+El Algoritmo $QR$ es un algoritmo usado en álgebra lineal para el cálculo de valores y vectores propios de una matriz. Se basa en la descomposición $QR$
+
+```{r}
+( m <- matrix(c(5,1,1,3),2,2) )
+( cm <- chol(m) )
+t(cm) %*% cm  #-- = 'm'
+crossprod(cm)  #-- = 'm'
+
+
+```
+
+```{r}
+x <- matrix(c(1:5, (1:5)^2), 5, 2)
+x <- cbind(x, x[, 1] + 3*x[, 2])
+colnames(x) <- letters[20:22]
+m <- crossprod(x)
+qr(m)$rank # is 2, as it should be
+
+
+```
+*chol()* puede fallar, dependiendo del redondeo numérico:
+*chol()* a diferencia de qr() no utiliza una tolerancia.
+
+```{r}
+
+try(chol(m))
+
+(Q <- chol(m, pivot = TRUE))
+## we can use this by
+pivot <- attr(Q, "pivot")
+crossprod(Q[, order(pivot)]) # recover m
+
+## now for a non-positive-definite matrix
+( m <- matrix(c(5,-5,-5,3), 2, 2) )
+
+try(chol(m))  # fails
+(Q <- chol(m, pivot = TRUE)) # warning
+crossprod(Q)  # not equal to m
+
+```
+
+
+```{r}
+B<-matrix(c(4,12,-16,12,37,-43,-16,-43,98),3,3)
+B
+chol(B)
+t(chol(B))%*%chol(B)
+
+```
+
+
+# Generación de Normal multivariada con descomposición de Cholesky
+
+La descomposición de Cholesky se usa comúnmente en el método de Montecarlo para simular sistemas con variables múltiples correlacionadas: la matriz de correlación entre variables es descompuesta, para obtener la triangular inferior $L$. Aplicando ésta a un vector simulados incorrelacionados, $u$ produce un vector $LU$ con las propiedades de covarianza del sistema a ser modelado.
+
+```{r}
+t<-1000
+set.seed(1234)
+(A.sim<-matrix(rnorm(20),nrow=10))
+plot(A.sim)
+(Sigma=cov(matrix(rnorm(20),nrow=10)))
+(Sigma.cor=cor(matrix(rnorm(20),nrow=10)))
+
+Sigma
+A=t(chol(Sigma))
+A
+A%*%t(A)
+(x=A%*%rnorm(2))
+
+y<-A%*%rnorm(2)
+y<-matrix(rnorm(t),t,2,byrow = TRUE)
+plot(y)
+cor(y)
+y<-matrix(0,t,2,byrow = TRUE)
+
+for (i in 1:t)
+{y[i,]<-A%*%rnorm(2)}
+summary(y)
+plot(y)
+cor(y)
+
+```
+
+# Otra forma de hacerlo
+
+- $\rho$ es coefieciente de correlación
+- $x_1 \sim N(0,1)$
+- $x_2 \sim N(0,1)$
+- $z_{1}=x_{1}$
+- $z_{2}=\rho x_{1}+ \sqrt{1-\rho^2}x_{2}$
+
+```{r simula_cholesky}
+set.seed(1234)
+t<-1000
+rho<-Sigma[1,2]
+x1<-rnorm(t)
+x2<-rnorm(t)
+z1<-x1
+z2<-rho*z1+sqrt(1-rho**2)*x2
+simula<-data.frame(x1,x2,z1,z2)
+summary(simula)
+round(cor(simula),3)
+pairs(simula)
+
+
+rho=0.7
+```
+
+# Otra forma más de hacerlo
+
+```{r}
+library(MASS)  
+library(RColorBrewer)
+k <- 11
+my.cols <- rev(brewer.pal(k, "RdYlBu"))
+
+z34 <- kde2d(y[,1], y[,2], n=50)
+contour(z34, drawlabels=TRUE, nlevels=k, col=rainbow(k), add=FALSE,lwd=2)
+filled.contour(z34$x,z34$y,z34$z,nlevels=k,col = rainbow(k))
+
+
+persp(z34$x,z34$y,z34$z, theta = -30, phi = 20, expand = 0.55, col = "red",shade = 0.45,scale=TRUE) 
+
+```
+
+
+
+
+# Simulacion de normal multivariada con libreria rmnorm mnormt
+
+```{r}
+library(mnormt)
+
+
+x <- seq(-2, 4, length=21)
+y <- cos(2*x) + 10
+z <- x + sin(3*y) 
+mu <- c(1,12,2)
+Sigma <- matrix(c(1,2,0,2,5,0.5,0,0.5,3), 3, 3)
+f <- dmnorm(cbind(x,y,z), mu, Sigma)
+f0 <- dmnorm(mu, mu, Sigma)
+p1 <- pmnorm(c(2,11,3), mu, Sigma)
+p2 <- pmnorm(c(2,11,3), mu, Sigma, maxpts=10000, abseps=1e-10)
+p <- pmnorm(cbind(x,y,z), mu, Sigma)
+#
+set.seed(123)
+x1 <- rmnorm(5, mu, Sigma)
+set.seed(123)
+x2 <- rmnorm(5, mu, sqrt=chol(Sigma)) # x1=x2
+eig <- eigen(Sigma, symmetric = TRUE)
+R <- t(eig$vectors %*% diag(sqrt(eig$values)))
+for(i in 1:50) x <- rmnorm(5, mu, sqrt=R)
+#
+p <- sadmvn(lower=c(2,11,3), upper=rep(Inf,3), mu, Sigma) # upper tail
+#
+p0 <- pmnorm(c(2,11), mu[1:2], Sigma[1:2,1:2])
+p1 <- biv.nt.prob(0, lower=rep(-Inf,2), upper=c(2, 11), mu[1:2], Sigma[1:2,1:2])
+p2 <- sadmvn(lower=rep(-Inf,2), upper=c(2, 11), mu[1:2], Sigma[1:2,1:2]) 
+c(p0, p1, p2, p0-p1, p0-p2)
+#
+p1 <- pnorm(0, 1, 3)
+p2 <- pmnorm(0, 1, 3^2)
+
+```
+
+
+
+
+# Simulacion de una discreta
+
+```{r}
+Nsim=10^4; lambda=100
+spread=3*sqrt(lambda)
+t=round(seq(max(0,lambda-spread),lambda+spread,1))
+t=round(seq(max(0),150,1))
+prob=ppois(t, lambda)
+X=rep(0,Nsim)
+U<-rep(0,Nsim)
+for (i in 1:Nsim){
+  u=runif(1)
+  U[i]<-u
+  X[i]=t[1]+sum(prob<u) }
+
+```
+
+
+
+#Distribuciones de mezclas
+
+
+```{r}
+z1 <- rnorm(10000, mean=1, sd=1)
+z2 <- rnorm(10000, mean=1, sd=1)
+z<-z1+z2
+zz<-z1*0.5+z2*0.5
+
+par(mfrow=c(2,2))
+
+hist(z1,breaks = 50,probability = TRUE)
+hist(z2,breaks = 50,probability = TRUE)
+hist(z,breaks = 50,probability = TRUE)
+hist(zz,breaks = 50,probability = TRUE)
+
+```
+
+
+# Ejemplo estraido de !http://stats.stackexchange.com/questions/70855/simulating-random-variables-from-a-mixture-of-normal-distributions
+
+# Muestra de N uniformes U
+```{r}
+N = 100000                 
+U =runif(N)
+
+#Variable para amacenar las muestras de la mezcla                                             
+rand.samples = rep(NA,N)
+
+#Muestreamos de la mezcla
+for(i in 1:N){
+  if(U[i]<.5){
+    rand.samples[i] = rnorm(1,0,1)
+  }else if(U[i]<.8){
+    rand.samples[i] = rnorm(1,2,1)
+  }else{
+    rand.samples[i] = rnorm(1,3,1)
+  }
+}
+
+#Densidad de las muestras
+plot(density(rand.samples),main="Densidad Estimada de la mezcla")
+
+#Plotting the true density as a sanity check
+x = seq(-20,20,.1)
+truth = .5*dnorm(x,0,1) + 0.3*dnorm(x,2,1) + .2*dnorm(x,3,1)
+plot(density(rand.samples),main="Densidad Estimada de la mezcla",ylim=c(0,.25),lwd=2)
+lines(x,truth,col="red",lwd=2)
+
+legend("topleft",c("Verdadera Densidad","Densidad Estimatada"),col=c("red","black"),lwd=2)
+
+```
+
+# Simulacion de una student
+
+```{r}
+Nsim=1000
+y<-rchisq(Nsim,6)
+
+
+hist(y,breaks = 50,probability = TRUE)
+lines(seq(0,20,0.01),dchisq(seq(0,20,0.01),6),lwd=2,col=2)
+
+x<-rnorm(Nsim,0,6/y)
+
+
+hist(x,breaks=50,probability = TRUE)
+lines(seq(-5,5,0.01),dt(seq(-5,5,0.01),6),lwd=2,col=2)
+
+```
+
+# Simulacion de una Binomial Negativa 
+
+```{r}
+Nsim=10^4
+n=6;p=.3
+y=rgamma(Nsim,n,rate=p/(1-p))
+x=rpois(Nsim,y)
+hist(x,freq=F,col="grey",breaks=40,main="Binomial Negativa Simulada como mezcla")
+lines(1:50,dnbinom(1:50,n,p),lwd=2,col="sienna")
+
+```
+
