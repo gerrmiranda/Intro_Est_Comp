@@ -1,0 +1,41 @@
+---
+title: "Clase_Reducción_Varianza"
+output: pdf_document
+date: "2023-11-22"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+```{r}
+
+set.seed(1234)
+n <-100
+u <-runif(n)
+hx <-sqrt(u)
+
+# estimacion de la integral
+mean (hx)
+
+# varianza de la estimacion
+V1 <-var (hx)/n
+
+set.seed (1234)
+n <-100
+u1 <-runif (n/2)
+u2 <-1-u1
+hx <-0.5 *( sqrt (u1) +0.5 * sqrt (u2))
+
+# estimacion de la integral
+mean(hx)
+
+# varianza de la estimacion
+V2 <-var (hx)/n
+
+1-(V2/V1)
+
+gamma(3.1)
+```
