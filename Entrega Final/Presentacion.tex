@@ -1,0 +1,196 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+  9pt,
+  ignorenonframetext,
+]{beamer}
+\usepackage{pgfpages}
+\setbeamertemplate{caption}[numbered]
+\setbeamertemplate{caption label separator}{: }
+\setbeamercolor{caption name}{fg=normal text.fg}
+\beamertemplatenavigationsymbolsempty
+% Prevent slide breaks in the middle of a paragraph
+\widowpenalties 1 10000
+\raggedbottom
+\setbeamertemplate{part page}{
+  \centering
+  \begin{beamercolorbox}[sep=16pt,center]{part title}
+    \usebeamerfont{part title}\insertpart\par
+  \end{beamercolorbox}
+}
+\setbeamertemplate{section page}{
+  \centering
+  \begin{beamercolorbox}[sep=12pt,center]{part title}
+    \usebeamerfont{section title}\insertsection\par
+  \end{beamercolorbox}
+}
+\setbeamertemplate{subsection page}{
+  \centering
+  \begin{beamercolorbox}[sep=8pt,center]{part title}
+    \usebeamerfont{subsection title}\insertsubsection\par
+  \end{beamercolorbox}
+}
+\AtBeginPart{
+  \frame{\partpage}
+}
+\AtBeginSection{
+  \ifbibliography
+  \else
+    \frame{\sectionpage}
+  \fi
+}
+\AtBeginSubsection{
+  \frame{\subsectionpage}
+}
+\usepackage{amsmath,amssymb}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\usecolortheme{beaver}
+\usefonttheme{professionalfonts}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\newif\ifbibliography
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{caption} \captionsetup[figure]{font=scriptsize} \renewcommand{\figurename}{Figura}
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Presentacion},
+  pdfauthor={Alumno},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Presentacion}
+\subtitle{Ciencia de datos con R}
+\author{Alumno}
+\date{8 de Julio de 2020}
+
+\begin{document}
+\frame{\titlepage}
+
+\begin{frame}{Datos}
+\protect\hypertarget{datos}{}
+Para la realización del trabajo se utilizó la Encuesta de Nutrición,
+Desarrollo y Salud Infantil (ENDIS) 2018, del INE.
+
+\pause
+
+El mismo se enfocó en las siguientes medidas antropométricas de los
+niños:
+
+\begin{itemize}
+
+  \item{Peso}
+  
+  \item{Talla/Altura}
+  
+  \item{Perímetro Cefálico}
+  
+  \item{Indice de Masa Corporal}
+  
+\end{itemize}
+
+\pause
+
+La idea principal es analizar el estado nutricional de los niños
+uruguayos con base en dichas medidas.
+
+\pause
+
+Para ello fueron utilizadas las recomendaciones de la OMS (WHO 2006)
+\end{frame}
+
+\begin{frame}{Estado de Salud por Peso}
+\protect\hypertarget{estado-de-salud-por-peso}{}
+\end{frame}
+
+\begin{frame}{Estado de salud por IMC}
+\protect\hypertarget{estado-de-salud-por-imc}{}
+\end{frame}
+
+\begin{frame}{Estado del Perímetro cefálico}
+\protect\hypertarget{estado-del-peruxedmetro-cefuxe1lico}{}
+\end{frame}
+
+\begin{frame}{Depresión en la madre durante el embarazo}
+\protect\hypertarget{depresiuxf3n-en-la-madre-durante-el-embarazo}{}
+\end{frame}
+
+\begin{frame}{Lactancia a temprana edad}
+\protect\hypertarget{lactancia-a-temprana-edad}{}
+\end{frame}
+
+\begin{frame}{ShinyApp}
+\protect\hypertarget{shinyapp}{}
+En la aplicación se presentan dos pestañas principales, una con
+resultados de la ENDIS y otra con una calculadora que sigue los
+estándares de crecimiento de la OMS.
+
+\textbf{Resultados de la ENDIS} :
+
+\begin{itemize}
+    \pause
+  
+    \item{Gráficos de dispersión}
+    
+    \pause
+    
+    \item{Diagrama de Barras apiladas}
+    
+    \pause
+    
+    \item{Gráfico de Marimekko}
+    
+  \end{itemize}
+
+\pause
+
+\textbf{Calculadora Pediátrica} :
+
+\pause
+
+Si se cuenta con una hoja de cálculo con el Peso, Talla/Altura y
+Périmetro Cefálico de un conjunto de niños a lo largo del tiempo, se
+puede visualizar la trayectoria de crecimiento y obtener información
+sobre su desarrollo.
+
+Enlace : \url{google.com}
+\end{frame}
+
+\end{document}

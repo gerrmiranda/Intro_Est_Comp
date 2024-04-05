@@ -1,60 +1,149 @@
 ---
-title: "Minimización de pérdida al aplicar un plan de simplificación"
-subtitle: "Trabajo Final de Introducción a la Estadística Computacional"
-author:
-- Lucas Bizoso
-- Germán Miranda
-date: "2023-11-16"
-output: 
+nocite: '@*'
+output:
+  pdf_document: default
   bookdown::pdf_document2:
     fig_caption: yes
-header-includes:
-   - \renewcommand{\contentsname}{Índice}
 ---
-\setcounter{tocdepth}{4}
+
+\thispagestyle{empty} 
+\begin {center}
+
+
+UNIVERSIDAD DE LA REPÚBLICA
+
+Facultad de Ciencias Económicas y de Administración
+
+Licenciatura en Estadística
+
+\vspace{4.5 cm}
+
+
+\textbf{\large  Minimización de pérdida de ingresos al aplicar un plan de simplificación comercial}
+
+
+\vspace{1.5 cm}
+
+\textbf{Miranda, Germán       Bizoso, Lucas}\\
+\textbf{Noviembre 2023}
+
+
+\end{center}
+
+
+\vspace{3.5cm}
+
+\begin{center}
+\textbf{Trabajo final de Introducción a la Estadística Computacional}\\
+\vspace{1.0 cm}
+
+\end{center}
+
+\newpage
+
+\renewcommand{\contentsname}{Índice}
+
+\tableofcontents
+
+
+
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-
 \newpage
 
 # Introducción
 
-(incluir intro al problema)
+Normalmente, cada cierto período de tiempo (mes, semestre, año, etc.) las empresas tienden a actualizar los productos y/o servicios que ofrecen, ya sea por mejoras en los beneficios que brindan, por innovación tecnológica de los mismos, por adaptarse a lo que ofrece el mercado en ese momento, entre otros.
+
+En este contexto, habitualmente sucede que esos productos y/o servicios tienden a acumularse en el catálogo histótico ya que si inicialmente un cliente contrata uno de los productos, este, por contrato, deberá mantenerse hasta que el mismo cese ya sea por voluntad del cliente o decisión unilateral de la empresa.
+
+A simple vista, esto no siempre puede ser un problema, pero en empresas de gran tamaño y de rubro de servicios si puede serlo, por varias razones:
+
+- En caso de mejoras en los nuevos productos, esto supone que los clientes más antigüos, gocen de menos beneficios que los nuevos por el mismo precio. Esto también podría provocar insatisfacción, generando pérdidas de clientes que busquen otras opciones fuera de la compañía.
+
+- Puede suponer un costo de mantenimiento ya que los servicios más antigüos también necesitan cierta actualización, como por ejemplo de precios, etiquetas de facturación, etc., así como también un costo de infraestructura para almacenar la infomación de esos productos que se van acumulando.
+
+Por estos motivos, es habitual que cada cierto período se realicen maniobras de simplificación para reducir la cantidad de servicios activos en los sistemas y también para brindar estas versiones mejoradas a los cientes que quedan desactualizados.
 
 
-```{r,echo=FALSE}
+
+```{r,echo=FALSE,include=FALSE}
+
 library(tidyverse)
 library(here)
 library(readxl)
 library(dplyr)
+library(ggplot2)
+library(scales)
+library(ggeasy)
+
 ```
 
-# Planteo del problema
+# Problema
 
-Leemos los datos y graficamos para ver si hay algún tipo de correlación entre los precios y el ingreso que generan.
+Esta maniobra de simplificación puede suponer un riesgo, ya que los clientes contractualmente no pueden abonar más de lo acordado, dejando que la opción sea abonar lo mismo o menos. Dado este problema, se asume que siempre la empresa perderá un cierto margen pero el objetivo en el que ahondaremos en el trabajo es poder minimizar lo más posible la pérdida para que no sea un gran impacto.
 
-```{r }
+Para poder resolver este problema, partimos de la situación inicial definiendo cómo se generan los ingresos y de qué variables dependen.
+
+Podemos ver que los ingresos están definidos como:
+
+$$
+I=\sum_{n = 1}^{i} P_{i}Q_{i}
+$$
+
+Donde $P_{i}$ es el precio del servicio $i$-ésimo, y $Q_{i}$ es la cantidad de clientes suscriptos a ese servicio. 
+
+En la siguiente tabla, podemos observar para una empresa ficticia, el listado actual de precios que tienen actualmente, la cantidad de suscriptos y el ingreso que se genera por plan.
+
+\newpage
+
+```{r tab-1,fig.cap='Tabla inicial de planes, precios y cantidades',echo=FALSE,results='asis', fig.align='center'}
 db = read_xlsx(here("Entrega Final","Base Productos.xlsx"))
 
 db = db %>% mutate (Ingreso_Por_Plan = Suscriptores*Precio_Producto)   %>% 
           arrange(Precio_Producto)
-                     
-x=unlist(db$Precio_Producto)
 
+knitr::kable(db %>%
+                slice(1:20), caption = "Tabla inicial de planes, precios y cantidades") %>% print()
+```
+
+
+Con estos datos, podemos armar un gráfico que nos muestre, para cada plan, cuánto aportan al ingreso final.
+
+
+```{r PLOT_DATA_INI, echo=FALSE,fig.cap="Dispersión de ingresos por plan comercial", fig.align='center'}
+db = read_xlsx(here("Entrega Final","Base Productos.xlsx"))
+
+db = db %>% mutate (Ingreso_Por_Plan = Suscriptores*Precio_Producto)   %>% 
+          arrange(Precio_Producto)
+
+x_max=as.numeric(db %>% filter(Ingreso_Por_Plan==max(db$Ingreso_Por_Plan)) %>% select(Precio_Producto))
 y=unlist(db$Ingreso_Por_Plan)
-          
-plot(x,y)
+y_max=max(y)
+x=unlist(db$Precio_Producto)
+m_max=c(x_max,y_max)
+
+pl=ggplot(data=db,aes(x=Precio_Producto,y=Ingreso_Por_Plan))+geom_point()
+pl+ geom_point(aes(x=x_max,y=y_max),col="red")+ 
+theme_bw() + theme(axis.text.x = element_text( hjust = 1))+
+labs(x='Precio del plan (en pesos)',y='Ingreso (en Pesos)',title = "Dispersión de ingreso por plan") +
+scale_y_continuous(label=label_number(),breaks = c(seq(0,8000000,1000000)))+
+scale_x_continuous(label=label_number(),breaks = c(seq(0,3000,500)))+
+ggeasy::easy_center_title()
 
 ```
 
+En el gráfico, se puede observar que no hay una relación entre los precios de los planes y de los ingresos ya que no dependen solamente de su precio, si no de la cantidad de clientes que estén suscriptos.
 
 
 \newpage
 
 # Simulación para un caso puntual
+
+(CONTINUAR ACÁ)
 
 Como primer paso, creamos una función que genera precios de planes aleatorios en base a tres parámetros:
 
@@ -71,16 +160,16 @@ p_actuales=unlist(db$Precio_Producto)
 q_actuales=unlist(db$Suscriptores)
 
 
-planes_nuv <- function(n_final,min,max) {
-    # n_final cantidad de planes menos dos
+planes_nuv <- function(n_final,min=200,max=3000) {
+    # n_final cantidad de planes
     # min precio para crear planes y el primer plan
     # max precio para crear planes y el último plan
     # devuelve n planes nuevos generados por runif
-    p_nuevos_L = as.integer(runif(n_final-2,min+1,max-1))
-    p_nuevos_L = p_nuevos_L[order(p_nuevos_L)]
+    p_nuevos_L = sort(rdunif(n_final-2,min,max))
     p_nuevos_L = c(min,p_nuevos_L,max)
     return(p_nuevos_L)
 }
+
 
 ganancia_nuv <- function(new_p,old_p,old_cli){
     # new_p vector planes nuevos 
@@ -91,12 +180,12 @@ ganancia_nuv <- function(new_p,old_p,old_cli){
     #           - la ganancia del plan viejo 
     #           - la diferencia entre ambas
     
-    # nueva distrivucion de los clientes
+    # nueva distribución de los clientes
     new_cli=rep(0,length(new_p))
     
     for(i in length(old_cli):1) {
         j = length(new_p)
-        while(old_p[i]<new_p[j] && j!=1){
+        while(old_p[i]<=new_p[j] && j!=1){
             j=j-1
         }
         new_cli[j] = new_cli[j] + old_cli[i]
@@ -111,7 +200,8 @@ ganancia_nuv <- function(new_p,old_p,old_cli){
     res <- list(new_cli = new_cli , 
                 new_ingresos = new_ingresos , 
                 old_ingresos = old_ingresos , 
-                diferencia = diferencia)
+                diferencia = diferencia,
+                porc_dif = (diferencia)/old_ingresos)
     return(res)
 }
 
@@ -122,7 +212,8 @@ max=max(p_actuales)
 
 new_p=planes_nuv(n,min=min,max=max)
 
-ganancia_nuv(new_p = new_p,old_p = p_actuales,old_cli=q_actuales )
+ganancia_nuv(new_p = new_p,old_p = p_actuales,old_cli=q_actuales)
+
 
 ```
 \newpage
@@ -156,10 +247,17 @@ simul_L <- function(n_final,min,max,old_p,old_cli,tol,cant_sim = 1000){
 }
 
 
+
+new_p
+old_p
+
 res_sim <- simul_L(n_final=20,min=min,max=max,p_actuales,q_actuales,tol=-600000)
 
 View(res_sim)
 
+summary(res_sim)
+
+res_sim
 
 max(res_sim[,21])
 
@@ -185,11 +283,87 @@ simu_cant <- function(n_start,n_end,min,max,old_p,old_cli,tol,cant_sim = 1000) {
     return(mat)
 }
 
-mat <- simu_cant(18,80,200,3000,p_actuales,q_actuales,1000000)
+mat <- simu_cant(10,30,200,3000,p_actuales,q_actuales,1000)
 View(mat)
 
 ```
 
+
+
+```{r,eval=FALSE}
+sq <- c(1:nrow(eurodistmat), 1) 
+
+planes_nuv <- function(n_final=20,min=200,max=3000) {
+    # n_final cantidad de planes menos dos
+    # min precio para crear planes y el primer plan
+    # max precio para crear planes y el último plan
+    # devuelve n planes nuevos generados por runif
+    p_nuevos_L = as.integer(runif(n_final-2,min+1,max-1))
+    p_nuevos_L = p_nuevos_L[order(p_nuevos_L)]
+    p_nuevos_L = c(min,p_nuevos_L,max)
+    return(p_nuevos_L)
+}
+set.seed(1)
+new_p=planes_nuv(10,200,3000)
+new_p
+new_cli=rep(0,length(new_p))
+old_cli=unlist(db$Suscriptores)
+old_p=unlist(db$Precio_Producto)
+for(i in length(old_cli):1) {
+        j = length(new_p)
+        while(old_p[i]<new_p[j] && j!=1){
+            j=j-1
+        }
+        new_cli[j] = new_cli[j] + old_cli[i]
+    }
+
+sum(new_cli)
+sum(old_cli)
+ingresos(new_p)
+
+sum(old_p*old_cli)
+
+
+new_p =c(268,  435,  467,  541,  642,  685, 1095 ,1253 ,1436, 1696, 1897, 1938, 1991, 2230, 2499, 2510, 2638, 2960, 2969, 2999)
+
+
+dif_ingresos= function(new_p) {
+  i_inicial=43777406
+  new_cli=c(7168,190, 6704 ,2999,   77, 8228,  938, 3548, 3393,  515,    0, 4544, 1174,  707,    0,  349,  410,   0 , 752,    0)
+  i=sum(new_p*new_cli)
+  i=i_inicial-i
+   return(i)}  
+
+
+res <- optim(new_p, fn=dif_ingresos,method = 'SANN',
+             control = list(maxit = 3600,  trace = TRUE,
+                            REPORT = 500))
+
+
+res
+length(new_p)
+
+
+sum(res$par*new_cli)
+sum(new_cli*new_p)
+
+
+
+vectorb <- new_p
+
+
+
+genseq <- function(sq) {  # Generate new candidate sequence
+  idx <- seq(2, NROW(eurodistmat)-1)
+  changepoints <- sample(idx, size = 2, replace = FALSE)
+  tmp <- sq[changepoints[1]]
+  sq[changepoints[1]] <- sq[changepoints[2]]
+  sq[changepoints[2]] <- tmp
+  sq
+}
+
+
+```
 
 
 
@@ -314,3 +488,24 @@ for (i in 1:(length(q_nuevos)-1)) {
 Ifinal=sum(p_nuevos*q_nuevos)
 
 ```
+
+\newpage
+
+# Anexo
+
+## Paquetes utilizados
+
+  
+```{r, echo=FALSE}
+citation("tidyverse")
+citation("here")
+citation("readxl")
+citation("dplyr")
+citation("ggplot2")
+citation("scales")
+citation("ggeasy")
+```
+
+
+
+

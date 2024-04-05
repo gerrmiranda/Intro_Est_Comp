@@ -1,0 +1,286 @@
+---
+title: "Minimización de Pérdida de Ingresos"
+author: "Lucas Bizoso, Germán Miranda"
+date: "1ro de diciembre de 2023"
+output:
+  ioslides_presentation: default
+  beamer_presentation:
+    theme: default
+    colortheme: beaver
+    fonttheme: professionalfonts
+  slidy_presentation: default
+subtitle: Introducción a la Estadística Computacional
+fontsize: 9pt
+header-includes: \usepackage{caption} \captionsetup[figure]{font=scriptsize} \renewcommand{\figurename}{Figura}
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+library(tidyverse)
+library(here)
+library(readxl)
+library(dplyr)
+library(ggplot2)
+library(scales)
+library(ggeasy)
+```
+
+## Introducción 
+
+El objetivo del proyecto es intentar minimizar la pérdida de ingresos al aplicar un plan de simplificación comercial. Esto quiere decir que, se busca reducir la cantidad de servicios activos que tiene una empresa y que sus clientes actuales, pasen a esos nuevos servicios, minimizando el impacto económico.
+
+\pause
+
+Como premisa, trabajaremos con que el servicio nuevo del cliente no puede ser más caro del que ya tenía, y que la cantidad de clientes activos no varía al aplicar el plan.
+
+
+
+## Situación actual
+
+La forma que tenemos de calcular el ingreso, está dada por la siguiente fórmula:
+
+$$
+I_{inicial}=\sum_{n_{ini} = 1}^{K} P_{inicial_{K}}Q_{inicial_{K}}
+$$
+Donde $P_{inicial_{K}}$ son los precios por plan y $Q_{inicial_{K}}$ la cantidad de clientes suscriptos a ese plan. En nuestro problema, buscaremos variar tanto $K$ (cantidad de planes nuevos) como los precios para saber qué combinación logra la menor pérdida.
+
+Para este análisis utilizaremos datos simulados de planes, precios y cantidades con una cantidad inicial de productos de 50.
+
+
+# Aplicación de métodos
+
+## Simulación de precios a partir de Uniformes
+
+Comenzamos simulando sólamente los precios y dejando un $K$ fijo de 20 productos. Como primer paso, armamos una función que, dado un listado de precios nuevos, asigna la cantidad de clientes a esos nuevos precios en base a la lógica comentada anterormente.
+
+\pause
+
+Luego creamos otra función que en base a los $P_{inicial}$ y $Q_{inicial}$ y al $K$ buscado, realiza la simulación de precios. A continuación se puede observar el resultado para cada una de las simulaciones y cuál es la combinación que minimiza mejor la pérdida.
+
+\pause
+
+## Gráfico
+
+
+```{r graf_prm_sim, echo=FALSE,warning=FALSE}
+db = read_xlsx(here("Entrega Final","Base Productos.xlsx"))
+
+db = db %>% mutate (Ingreso_Por_Plan = Suscriptores*Precio_Producto)   %>% 
+          arrange(Precio_Producto)
+
+set.seed(1234)
+planes_nuv <- function(n_final,min=200,max=3000) {
+    p_nuevos_L = sort(rdunif(n_final-2,min,max))
+    p_nuevos_L = c(min,p_nuevos_L,max)
+    return(p_nuevos_L)
+}
+
+ganancia_nuv <- function(new_p,old_p,old_cli){
+# nueva distribución de los clientes
+    new_cli=rep(0,length(new_p))
+    
+    for(i in length(old_cli):1) {
+        j = length(new_p)
+        while(old_p[i]<=new_p[j] && j!=1){
+            j=j-1
+        }
+        new_cli[j] = new_cli[j] + old_cli[i]
+    }
+# nuevas ganacias
+    new_ingresos <- sum(new_p*new_cli)
+# viejas ganancias 
+    old_ingresos <- sum(old_p*old_cli)
+#diferencia (asumiendo old_ingresos > new_ingresos)
+    diferencia = new_ingresos- old_ingresos  
+    res <- list(new_p = new_p,
+                new_cli = new_cli , 
+                new_ingresos = new_ingresos , 
+                old_ingresos = old_ingresos , 
+                diferencia = diferencia,
+                porc_dif = (diferencia)/old_ingresos)
+    return(res)
+}
+
+
+p_actuales=unlist(db$Precio_Producto)
+q_actuales=unlist(db$Suscriptores)
+n=20
+min=min(p_actuales)
+max=max(p_actuales)
+
+new_p=planes_nuv(n,min=min,max=max)
+
+vec=ganancia_nuv(new_p = new_p,old_p = p_actuales,old_cli=q_actuales)
+
+
+simul_L <- function(n_final,min,max,old_p,old_cli,tol,cant_sim = 1000){
+    # usa planes_nuv y ganancia_nuv
+    # tol valor que hay que superar para ser aceptada la nueva distribución
+    # cant_sim cantidad de simulaciones
+    all <- matrix(0 , nrow = cant_sim , ncol = (n_final+2))
+    # primeras n_final+2 columnas son los 20 planes 
+    # penúltima columna es la diferencia con los ingresos viejos
+    # última columna es un T/F según se alcance la tolerancia
+    for (i in 1:cant_sim) {
+        plan_i <- planes_nuv(n_final,min,max)
+        gan_i <- ganancia_nuv(plan_i,old_p,old_cli)
+        t_f <- as.numeric(gan_i$diferencia>tol)
+        vector <- c(plan_i,gan_i$diferencia,t_f)
+        all[i,] <- vector
+    }
+    return(all)
+}
+
+n_final=20
+res_sim <- simul_L(n_final=n_final,min=min,max=max,p_actuales,q_actuales,tol=-600000)
+
+col_names = c(paste('Producto',seq(1,n_final,1)),'Diferencia','Flag_Tolerancia')
+row_names = c(paste('Simul.',seq(1,nrow(res_sim),1)))
+
+df = as.data.frame(res_sim)
+colnames(df)=col_names
+rownames(df)=row_names
+
+
+max = df %>% mutate(Nro_Sim=cur_group_rows()) %>%
+                   filter(Diferencia == max(Diferencia))%>%
+                              select('Nro_Sim','Diferencia')
+y_max = as.numeric( max %>% select('Diferencia'))
+x_max = as.numeric( max%>% select('Nro_Sim'))
+
+pl=ggplot(data=df,aes(x=1:1000,y=Diferencia))+geom_point()
+pl+ geom_point(aes(x=x_max,y=y_max),col="red",size=2)+ 
+theme_bw() + theme(axis.text.x = element_text( hjust = 1))+
+labs(x='Nro de Simulación',y='Pérdida (en Pesos)',title = "Resultados de simulación variando sólamente precios") +
+scale_y_continuous(label=label_number(),breaks = c(seq(0,-20000000,-2000000)))+
+scale_x_continuous(label=label_number(),breaks = c(seq(0,1000,100)))+
+ggeasy::easy_center_title()
+```
+\pause
+
+## 
+
+En el punto rojo se marca cuál es el nro de simulación que logró la menor pérdida. Ese punto refiere a la siguiente combinación de precios:
+
+```{r ,echo=FALSE,results='asis', fig.align='center' }
+tbl=df %>% filter(Diferencia == max(Diferencia)) %>% select('Producto 1','Producto 2','Producto 19','Producto 20','Diferencia','Flag_Tolerancia')
+knitr::kable(tbl , caption = "Listado de precios para la menor diferencia") %>% print()
+```
+
+## Simulando precios y planes
+Ahora vamos a probar simular los precios y a su vez la cantidad de planes, para ver con qué combinación se obtiene la menor pérdida.
+```{r, echo=FALSE,results='asis', fig.align='center'}
+
+simu_cant <- function(n_start,n_end,min,max,old_p,old_cli,tol,cant_sim = 1000) {
+    mat <- matrix(0, nrow = n_end-n_start+1 , ncol = 4)
+    for(n in n_start:n_end){
+        datos = simul_L(n,min,max,old_p,old_cli,tol)
+        mat[(n-n_start+1),] = c(n,min(datos[,n+1]),max(datos[,n+1]),mean(datos[,n+1]))
+    }
+    return(mat)
+}
+
+
+mat <- simu_cant(10,30,200,3000,p_actuales,q_actuales,1000)
+
+col_names = c('Cant_Planes','Min_Perdida','Max_Perdida','Prom_Perdida')
+
+df = as.data.frame(mat)
+colnames(df)=col_names
+
+ggplot(data=df,aes(x=Cant_Planes,y=Max_Perdida))+geom_line()+
+theme_bw() + theme(axis.text.x = element_text( hjust = 1))+
+labs(x='Cantidad de planes',y='Pérdida (en Pesos)',title = "Resultados de simulación variando precios y cantidad de planes") +
+scale_y_continuous(label=label_number(),breaks = c(seq(0,-20000000,-1000000)))+
+scale_x_continuous(label=label_number(),breaks = c(seq(10,30,5)))+
+ggeasy::easy_center_title()
+
+
+```
+
+
+## Simulación con distribuciones Gamma
+Ahora probamos aplicar el mismo método de solo uniformes, pero generando los precios con distribuciones gamma y variando el $\alpha$ y $\sigma$ de la distribución. Fijamos $K$ en 20 productos.
+
+```{r ,echo=FALSE,warning=FALSE,results='asis', fig.align='center' }
+# El enfoque es ya con la cantidad de planes
+
+min_dif <- function(tabla_planes){
+    posicion <- which(res_sim == max(t(tabla_planes[,length(tabla_planes[1,])-1])),arr.ind = TRUE)
+    plan <- tabla_planes[posicion[1,1],]
+}
+
+simul_gam <- function(min,max,old_p,old_cli,alfa_m = 0,alfa_M = 20,by_alfa=0.2,sig_m=0.01,sig_M = 10,by_sig=0.01,cant_sim = 500,n_pla = 20){
+  # min es el precio mínimo
+  # max es el precio máximo
+  # old_p es el vector de precios anterior
+  # old_cli es la cantidad de clientes en los precios viejos
+  # alfa_m es el primer valor de las secuencia de alfas, alfa_M es el último y by_alfa es de a cuanto va aumentando
+  # sig_m es el primer valor de las secuencia de sigmas, sig_M es el último y by_sig es de a cuanto va aumentando
+  # cant_sim es la cantidad de simulaciones por cada combinación de parámetros
+  # n_pla la cantidad de planes nuevos (dos de eso son el min y el max)
+r <- 1
+s_a <- seq(alfa_m,alfa_M,by=by_alfa)
+s_s <- seq(sig_m,sig_M,by=by_sig)
+all_g <- matrix(0,nrow = (length(s_a)*length(s_s)),ncol = n_pla+3)
+for(i in s_a){
+    for(j in s_s){
+        x <- rgamma(n_pla-2,i,rate = j)*100
+        x <- c(min,x,max)
+        x = x[order(x)]
+        new_cli=rep(0,n_pla)
+        for(l in length(old_cli):1) {
+            p = n_pla
+            while(old_p[l]<x[p] && p!=1){
+                p=p-1
+            }
+            new_cli[p] = new_cli[p] + old_cli[l]
+        }
+        new_ingresos <- sum(x*new_cli)
+        old_ingresos <- sum(old_p*old_cli)
+        diferencia = new_ingresos- old_ingresos
+        if(all_g[r,23]==0 || all_g[r,23] > diferencia){
+            all_g[r,] <- c(i,j,x,diferencia)
+        }
+        r=r+1
+    }
+}
+return(all_g)
+}
+
+resul <- simul_gam(200,3000,p_actuales,q_actuales)
+
+resul <- resul[order(resul[,23],decreasing = TRUE),]
+
+
+best_unif <- res_sim[which(res_sim[,21]==max(res_sim[,21])),]
+bests <- matrix(NA,nrow = 6,ncol = 23)
+bests[1:5,] <- resul[1:5,]
+bests[6,3:23] <- best_unif[1:21]
+
+df = as.data.frame(bests)
+col_names=c('Alfa','Sigma','Diferencia')
+
+df= df %>% select('V1','V2','V23') %>% filter(V1!=is.nan(V1))
+
+colnames(df)=col_names
+
+knitr::kable(df , caption = "Diferencia de precio según Alfa y Sigma") %>% print()
+```
+
+
+## Conclusiones
+
+Si variamos sólamente precios con uniformes, podemos conseguir a los $P_{finales}$ posibles y de esos elegir el que menos pérdida genere, auque no estemos 100% seguros de que es la mejor combinación.
+
+Si variamos los precios y a su vez cantidad de planes, se ve una relación de que al aumentar la cantidad de planes, la pérdida disminuye. Esto puede ayudar a la hora de fijar el $K$
+
+Comparando contra las distribuciones gamma, no observamos que se logre un mejor resultado. Tal vez si se hicieran más simulaciones o variando $K$ se pueda lograr un mejor resultado. Tener en cuenta que los valores dados por una gamma no tienen con la forma usual de fijar un precio aunque puede ser un muy buen punto de partida.
+
+
+# ¿Preguntas?
+
+
+# ¡Gracias!
