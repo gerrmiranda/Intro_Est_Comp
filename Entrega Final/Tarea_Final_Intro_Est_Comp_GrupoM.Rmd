@@ -241,13 +241,26 @@ simul_L <- function(n_final,min,max,old_p,old_cli,tol,cant_sim = 1000){
 n_final=20
 res_sim <- simul_L(n_final=n_final,min=min,max=max,p_actuales,q_actuales,tol=-600000)
 
+res_sim_2 <- simul_L(n_final=n_final,min=min,max=max,p_actuales,q_actuales,tol=-600000,cant_sim = 5000)
+
 col_names = c(paste('Producto',seq(1,n_final,1)),'Diferencia','Flag_Tolerancia')
 row_names = c(paste('Simul.',seq(1,nrow(res_sim),1)))
 
 df = as.data.frame(res_sim)
 colnames(df)=col_names
 rownames(df)=row_names
+
+col_names_2 = c(paste('Producto',seq(1,n_final,1)),'Diferencia','Flag_Tolerancia')
+row_names_2 = c(paste('Simul.',seq(1,nrow(res_sim_2),1)))
+
+df_2 = as.data.frame(res_sim_2)
+colnames(df_2)=col_names_2
+rownames(df_2)=row_names_2
+
+
 ```
+
+
 ```{r, echo=FALSE,results='asis', fig.align='center'}
 tbl=head(df) %>% select('Producto 1','Producto 2','Producto 19','Producto 20','Diferencia','Flag_Tolerancia')
 knitr::kable(tbl , caption = "Muestra de la tabla final de resultados") %>% print()
@@ -264,14 +277,67 @@ max = df %>% mutate(Nro_Sim=cur_group_rows()) %>%
 y_max = as.numeric( max %>% select('Diferencia'))
 x_max = as.numeric( max%>% select('Nro_Sim'))
 
-pl=ggplot(data=df,aes(x=1:1000,y=Diferencia))+geom_point()
-pl+ geom_point(aes(x=x_max,y=y_max),col="red",size=2)+ 
-theme_bw() + theme(axis.text.x = element_text( hjust = 1))+
+pl=ggplot(data=df,aes(x=Diferencia))+geom_histogram()
+pl+ theme_bw() + theme(axis.text.x = element_text( hjust = 1))+
 labs(x='Nro de Simulación',y='Pérdida (en Pesos)',title = "Resultados de simulación variando sólamente precios") +
 scale_y_continuous(label=label_number(),breaks = c(seq(0,-20000000,-2000000)))+
 scale_x_continuous(label=label_number(),breaks = c(seq(0,1000,100)))+
 ggeasy::easy_center_title()
 ```
+
+```{r graf_prm_sim, echo=FALSE}
+max = df_2 %>% mutate(Nro_Sim=cur_group_rows()) %>%
+                   filter(Diferencia == max(Diferencia))%>%
+                              select('Nro_Sim','Diferencia')
+y_max = as.numeric( max %>% select('Diferencia'))
+x_max = as.numeric( max%>% select('Nro_Sim'))
+
+pl=ggplot(data=df_2,aes(x=Diferencia))+geom_histogram()
+pl
+
++ theme_bw() + theme(axis.text.x = element_text( hjust = 1))+
+labs(x='Nro de Simulación',y='Pérdida (en Pesos)',title = "Resultados de simulación variando sólamente precios") +
+scale_y_continuous(label=label_number(),breaks = c(seq(0,-20000000,-2000000)))+
+scale_x_continuous(label=label_number(),breaks = c(seq(0,1000,100)))+
+ggeasy::easy_center_title()
+```
+
+
+```{r}
+new_cli <- c(7168, 190, 6704, 2999, 77, 8228, 938, 3548, 3393, 515, 0, 4544, 1174, 707, 0, 349, 410, 0, 752, 0)
+# Ingreso inicial fijo
+i_inicial <- 43777406
+
+# Función de ingresos
+dif_ingresos <- function(new_p) {
+  i <- sum(new_p * new_cli)
+#  i <- i_inicial - i
+  return(i)
+}
+
+new_p <- c(268, 435, 467, 541, 642, 685, 1095, 1253, 1436, 1696, 1897, 1938, 1991, 2230, 2499, 2510, 2638, 2960, 2969, 2999)
+
+dif_ingresos(new_p)
+
+# Límites para los precios de los planes
+lower_bound <- rep(200, length(new_p))
+lower_bound
+upper_bound <- rep(3000, length(new_p))
+
+res <- optim(par = new_p, fn = dif_ingresos, method = 'L-BFGS-B', lower = lower_bound, upper = upper_bound)
+
+# Precios óptimos encontrados
+precios_optimos <- res$par
+precios_optimos
+new_p
+
+sum(precios_optimos*new_cli)
+i_inicial
+
+
+```
+
+
 
 
 En el gráfico podemos ver qué perdida obtuvimos para cada una de las simulaciones de precios y destacado en rojo, la simulación que logró menor diferencia de ingresos, que está dada por el siguiente listado de precios:
